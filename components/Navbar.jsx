@@ -1,3 +1,5 @@
+// navbar - currently not used
+
 import { Disclosure, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 
 export default function Navbar() {
