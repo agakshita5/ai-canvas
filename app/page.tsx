@@ -10,7 +10,7 @@ export default function Home() {
         {/* <Navbar /> */}
         <div className="container flex">
             <Sidebar />
-            <div className="prompt-container flex-box items-center w-dvw ml-40 mt-90">
+            <div className="flex-box flex-1 justify-center content-center pl-50 pb-50">
               <PromptBar />
             </div>
         </div>
