@@ -1,7 +1,7 @@
 export default function Download(){
     return(
         <>
-            <div className="absolute top-10 right-15 z-20 flex gap-2">
+            <div className="flex gap-2">
                 <button 
                     className="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-md"
                     title="Download image"
