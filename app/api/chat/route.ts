@@ -1,6 +1,7 @@
 import { ImageModel, streamText, UIMessage, convertToModelMessages, generateImage } from 'ai';
 import { replicate } from '@ai-sdk/replicate';
 import { writeFile } from 'node:fs/promises';
+import { ifError } from 'node:assert';
 
 const defaultModel = "black-forest-labs/flux-schnell";
 const defaultSize = "1024x1024"
