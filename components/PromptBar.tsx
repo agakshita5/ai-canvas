@@ -3,41 +3,32 @@
 
 import { useChat } from '@ai-sdk/react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import useImageGeneration from '@/hooks/use-img-generation';
 
 interface PromptBarProps{
     variant: 'home' | 'canvas';
 }
 
 export default function PromptBar({variant = 'home'}:PromptBarProps){
-    const sizeList = ["1:1", "2:3", "3:2", "4:5", "5:4", "16:9", "9:16", "9:21", "21:9"];
-    const aspectRatioList = ["1024x1024", "1365x1024", "1024x1365", "1536x1024", "1024x1536", "1820x1024", "1024x1820", "1024x2048", "2048x1024", "1434x1024", "1024x1434", "1024x1280", "1280x1024", "1024x1707", "1707x1024"];
+    const aspectRatioList = ["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "16:9", "9:16", "21:9"];
     const [input, setInput] = useState('');
-    const [model, setModel] = useState('');
     const [size, setSize] = useState('');
+    const router = useRouter();
+    const {generate, loading} = useImageGeneration();
 
-    // const { messages, sendMessage } = useChat();
-    async function handleSubmit(e: Event) {
+    async function handleSubmit(e: React.SubmitEvent) {
         e.preventDefault();
-        const res = await fetch("/api/chat", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                message: [{ 
-                    role: "user", 
-                    content: input,
-                    model: model,
-                    size: size
-                }]
-            })
-        });
+        if(!input || !size) return;
 
-        const data = await res.json();
-        console.log("Response from API:", data.reply);
+        const res = await generate(input, size);
+        if(res){
+            router.push('/app(routes)/generate'); // naviagte to canvas page
+        }
     }
+
     // Variant-specific classes
     const containerClasses = variant === 'canvas' 
         ? 'bottom-0 left-0 right-0 p-4 z-10'
@@ -45,16 +36,8 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
     return (
         <div className={containerClasses}>
             <div className="flex flex-col items-center gap-3 w-full">
-                {/* loading indicator */}
-                {/* <div className="flex justify-center" aria-hidden="true">
-                    <div className="flex animate-pulse space-x-2">
-                        <div className="h-2 w-2 rounded-full bg-slate-600"></div>
-                        <div className="h-2 w-2 rounded-full bg-slate-600"></div>
-                        <div className="h-2 w-2 rounded-full bg-slate-600"></div>
-                    </div>
-                </div> */}
                 {/* prompt bar */}
-                <form onSubmit={handleSubmit} className='w-full flex justify-center px-4'>
+                <form onSubmit={handleSubmit} className='w-full flex justify-center px-4 gap-10'>
                     <label htmlFor="chat-input" className="sr-only">Enter your idea & image resolution</label>
                     <div className="flex w-full max-w-3xl items-center gap-2 rounded-xl bg-slate-200 p-2 shadow-md dark:bg-slate-800">
                         {/* voice input button */}
@@ -92,28 +75,6 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                                 e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
                             }}
                         ></textarea>
-                        {/* model-dropdown */}
-                        <Menu as="div" className="relative flex-shrink-0">
-                            <MenuButton className="inline-flex w-fit rounded-md px-2 py-1 text-sm font-semibold text-slate-500 hover:bg-white/5 dark:text-slate-400 dark:hover:bg-white/5 ">
-                                {model || "Model"}
-                                <ChevronDownIcon aria-hidden="true" className="-mr-1 size-5 text-gray-400" />
-                            </MenuButton>
-
-                            <MenuItems transition className={`absolute z-10 w-56 rounded-md ${variant==='canvas'? 'right-0 mb-2 origin-bottom-right bottom-full' : 'right-0 mt-2 origin-top-right'} max-h-64 overflow-y-auto bg-gray-800 outline-1 -outline-offset-1 outline-white/10 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in`} >
-                                <div className="py-1">
-                                    <MenuItem>
-                                        <a onClick={() => {setModel("flux-schnell"), setSize("")}} href="#" className="block px-4 py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:text-white data-focus:outline-hidden" >
-                                        flux-schnell
-                                        </a>
-                                    </MenuItem>
-                                    <MenuItem>
-                                        <a onClick={() => {setModel("recraft-v3"),  setSize("")}} href="#" className="block px-4 py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:text-white data-focus:outline-hidden" >
-                                        recraft-v3
-                                        </a>
-                                    </MenuItem>
-                                </div>
-                            </MenuItems>
-                        </Menu>
                         {/* size/aspect-ratio dropdown */}
                         <Menu as="div" className="relative">
                             <MenuButton className="inline-flex w-fit rounded-md px-2 py-1 text-sm font-semibold text-slate-500 hover:bg-white/5 dark:text-slate-400 dark:hover:bg-white/5 ">
@@ -124,21 +85,44 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                             <MenuItems transition className={`absolute z-10 w-56 rounded-md ${variant==='canvas'? 'right-0 mb-2 origin-bottom-right bottom-full' : 'right-0 mt-2 origin-top-right'} max-h-64 overflow-y-auto bg-gray-800 outline-1 -outline-offset-1 outline-white/10 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in`} >
                                 <div className="py-1">
                                     {
-                                    (model=="flux-schnell" ? sizeList : aspectRatioList).map((element)=>{
-                                            return (
-                                                <MenuItem key={element}>
-                                                    <a onClick={() => setSize(element)} href="#" className="block px-4 py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:text-white data-focus:outline-hidden" >
-                                                    {element}
-                                                    </a>
-                                                </MenuItem>
-                                            );
-                                        })
+                                    aspectRatioList.map((element)=>{
+                                        return (
+                                            <MenuItem key={element}>
+                                                <a onClick={() => setSize(element)} href="#" className="block px-4 py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:text-white data-focus:outline-hidden" >
+                                                {element}
+                                                </a>
+                                            </MenuItem>
+                                        );
+                                    })
                                     }
                                 </div>
                             </MenuItems>
                         </Menu> 
                         {/* generate button */}
-                        <button type="submit" className="rounded-lg bg-blue-700 p-2 text-sm font-medium text-slate-200 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:text-base" >
+                        <button type="submit" disabled={loading} className="rounded-lg bg-blue-700 p-2 text-sm font-medium text-slate-200 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:text-base" >
+                            (loading ? 
+                            <svg
+                                className="h-6 w-6 animate-spin"
+                                viewBox="0 0 24 24"
+                            >
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                className="opacity-25"
+                                fill="none"
+                            />
+                            <path
+                                d="M22 12a10 10 0 0 1-10 10"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                className="opacity-75"
+                                fill="none"
+                            />
+                            </svg>
+                            : 
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="h-6 w-6"
@@ -152,10 +136,8 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                             >
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                 <path d="M10 14l11 -11"></path>
-                                <path
-                                d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5"
-                                ></path>
-                            </svg>
+                                <path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5" ></path>
+                            </svg>)
                             <span className="sr-only">Send message</span>
                         </button>
                     </div>
