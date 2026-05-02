@@ -1,4 +1,6 @@
-import { setegid } from 'process';
+// handles the API call
+// returns generate function that PromptBar will call
+
 import { useState } from 'react';
 
 export default function useImageGeneration(){

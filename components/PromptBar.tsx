@@ -100,8 +100,8 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                         </Menu> 
                         {/* generate button */}
                         <button type="submit" disabled={loading} className="rounded-lg bg-blue-700 p-2 text-sm font-medium text-slate-200 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:text-base" >
-                            (loading ? 
-                            <svg
+                            {loading ? 
+                            (<svg
                                 className="h-6 w-6 animate-spin"
                                 viewBox="0 0 24 24"
                             >
@@ -121,9 +121,9 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                                 className="opacity-75"
                                 fill="none"
                             />
-                            </svg>
+                            </svg>)
                             : 
-                            <svg
+                            (<svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="h-6 w-6"
                                 aria-hidden="true"
@@ -138,6 +138,7 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                                 <path d="M10 14l11 -11"></path>
                                 <path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5" ></path>
                             </svg>)
+                            }
                             <span className="sr-only">Send message</span>
                         </button>
                     </div>
