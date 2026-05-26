@@ -1,3 +1,5 @@
+import { createSupabaseServerClient } from '@/lib/supabase/server';
+
 export type GenerationRecord = { // to return in this shape
   id: string;
   user_id: string;
@@ -31,15 +33,47 @@ export type CreateGenerationInput = { // to give it as a input for record creati
 
 export async function findSimilarGeneration(
   queryEmbedding: number[],
-  threshold?: number,
-  count?: number,
-): Promise<SimilarGenerationMatch | null>;
+  threshold = 0.9,
+  count = 1,
+): Promise<SimilarGenerationMatch | null> {
+  
+  const supabase = createSupabaseServerClient();
+  // rpc: remote procedure call 
+  // to call a sql function in supabase from the backend
+  const { data, error } = await supabase.rpc('match_similar_generations', {
+    query_embedding: queryEmbedding,
+    match_threshold: threshold,
+    match_count: count,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data[0] ?? null;
+}
 
 export async function createGeneration(
   input: CreateGenerationInput,
-): Promise<GenerationRecord>;
+): Promise<GenerationRecord> {
+  const supabase = createSupabaseServerClient();
 
-export async function getGenerationsForUser(
-  userId: string,
-  limit?: number,
-): Promise<GenerationRecord[]>;
+  const { data, error } = await supabase
+    .from('generations')
+    .insert({
+      user_id: input.userId,
+      prompt: input.prompt,
+      prompt_embedding: input.promptEmbedding,
+      image_url: input.imageUrl,
+      cloudinary_public_id: input.cloudinaryPublicId,
+      aspect_ratio: input.aspectRatio,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+}

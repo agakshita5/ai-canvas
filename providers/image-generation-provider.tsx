@@ -5,7 +5,7 @@
 import { createContext, useContext, useState, ReactNode  } from 'react';
 
 interface ImageContextType{
-    imageBase64: string;
+    imageUrl: string;
     loading: boolean;
     error: string;
     lastSize: string;
@@ -16,13 +16,12 @@ interface ImageContextType{
 const ImageContext = createContext<ImageContextType | undefined>(undefined);
 
 export function ImageGenerationProvider({ children }: { children: ReactNode }) {
-    const [imageBase64, setImageBase64] = useState<string>('');
+    const [imageUrl, setImageUrl] = useState<string>('');
     const [error, setError] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const [lastPrompt, setLastPrompt] = useState<string>('');
     const [lastSize, setLastSize] = useState<string>('');
 
-    // const { messages, sendMessage } = useChat();
     async function generate(prompt: string, size: string) {
         setLoading(true);
         setError('');
@@ -41,8 +40,8 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
                 throw new Error(data.error || `Server error: ${res.status}`);
             }
             if(data.success){
-                console.log('api returned:', data.imageBase64);
-                setImageBase64(data.imageBase64);
+                console.log('api returned:', data.imageUrl);
+                setImageUrl(data.imageUrl);
                 setLastPrompt(prompt);
                 setLastSize(size);
                 return true;
@@ -59,7 +58,7 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
     }
 
     return (
-        <ImageContext.Provider value={{imageBase64, loading, error, lastPrompt, lastSize, generate}}>
+        <ImageContext.Provider value={{imageUrl, loading, error, lastPrompt, lastSize, generate}}>
             {children}
         </ImageContext.Provider>
     );

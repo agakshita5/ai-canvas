@@ -1,3 +1,12 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-export function createSupabaseServerClient(): SupabaseClient;
+export function createSupabaseServerClient(): SupabaseClient {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SECRET_KEY;
+
+  if (!url || !key) {
+    throw new Error('missing supabase server env vars');
+  }
+
+  return createClient(url, key);
+}
