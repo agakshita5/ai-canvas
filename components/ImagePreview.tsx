@@ -1,7 +1,7 @@
 'use client';
 
 import Download from "@/components/Download";
-import useImageGeneration from "@/hooks/use-img-generation";
+import {useImageGeneration} from "@/providers/image-generation-provider";
 
 export default function ImagePreview(){
     const {imageBase64, loading} = useImageGeneration();

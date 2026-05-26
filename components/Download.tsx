@@ -1,8 +1,50 @@
+import { useImageGeneration } from "@/providers/image-generation-provider";
+
 export default function Download(){
+    const {imageBase64}=useImageGeneration();
+
+    // testing purpose
+    // const imageBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII'
+    
+    async function handleDownload() {
+        if(!imageBase64) return;
+        // stackoverflow
+        try{
+            const b64toBlob = (imageBase64, contentType='', sliceSize=512) => {
+                const byteCharacters = atob(imageBase64);
+                const byteArrays = [];
+                for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                    const slice = byteCharacters.slice(offset, offset + sliceSize);
+                    const byteNumbers = new Array(slice.length);
+                    for (let i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    byteArrays.push(byteArray);
+                }
+                const blob = new Blob(byteArrays, {type: contentType});
+                return blob;
+            }
+            const blob = b64toBlob(imageBase64, 'image/png');
+            const blobUrl = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = 'download-generated.png';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            URL.revokeObjectURL(blobUrl);
+        }catch(error){
+            console.error('Download failed:', error);
+        }
+    }
     return(
         <>
             <div className="flex gap-2">
-                <button 
+                <button onClick={handleDownload} disabled={!imageBase64}
                     className="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-md"
                     title="Download image"
                 >
@@ -15,3 +57,5 @@ export default function Download(){
         </>
     );
 }
+
+

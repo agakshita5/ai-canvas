@@ -1,31 +1,30 @@
 // prompt
 'use client';
 
-import { useChat } from '@ai-sdk/react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
-import useImageGeneration from '@/hooks/use-img-generation';
+import {useImageGeneration} from '@/providers/image-generation-provider';
 
 interface PromptBarProps{
     variant: 'home' | 'canvas';
 }
 
 export default function PromptBar({variant = 'home'}:PromptBarProps){
-    const aspectRatioList = ["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "16:9", "9:16", "21:9"];
-    const [input, setInput] = useState('');
+    const {generate, loading, lastPrompt, lastSize} = useImageGeneration();
+    const aspectRatioList = ["1:1", "3:4", "4:3", "9:16", "16:9"];
+    const [input, setInput] = useState(variant === 'canvas' ? lastPrompt : '');
     const [size, setSize] = useState('');
     const router = useRouter();
-    const {generate, loading} = useImageGeneration();
 
-    async function handleSubmit(e: React.SubmitEvent) {
+    async function handleSubmit(e: SubmitEvent) {
         e.preventDefault();
         if(!input || !size) return;
 
         const res = await generate(input, size);
         if(res){
-            router.push('/app(routes)/generate'); // naviagte to canvas page
+            router.push('/generate'); // naviagte to canvas page
         }
     }
 
@@ -66,8 +65,9 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                         <textarea
                             id="chat-input"
                             className="flex-1 resize-none px-2 bg-slate-200 text-sm text-slate-900 dark:bg-slate-800 dark:text-slate-200 dark:placeholder-slate-400 focus:outline-none focus:ring-0 focus:ring-transparent sm:text-base"
-                            placeholder="Enter your idea & image resolution"
+                            placeholder= {variant==='canvas' ? lastPrompt : "Enter your idea & image resolution"}
                             rows={1}
+                            value={input}
                             required
                             onChange={(e) => {
                                 setInput(e.currentTarget.value);
@@ -78,7 +78,7 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                         {/* size/aspect-ratio dropdown */}
                         <Menu as="div" className="relative">
                             <MenuButton className="inline-flex w-fit rounded-md px-2 py-1 text-sm font-semibold text-slate-500 hover:bg-white/5 dark:text-slate-400 dark:hover:bg-white/5 ">
-                                {size || "Size"}
+                                {size || lastSize || "Size"}
                                 <ChevronDownIcon aria-hidden="true" className="-mr-1 size-5 text-gray-400" />
                             </MenuButton>
 
