@@ -1,6 +1,6 @@
-import { ImageModel, streamText, UIMessage, convertToModelMessages, generateImage } from 'ai';
+import { generateImage } from 'ai';
 import { vertex } from '@ai-sdk/google-vertex';
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 const defaultAspectRatio = "1:1"
 
