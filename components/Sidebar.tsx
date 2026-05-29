@@ -1,14 +1,37 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { UserButton } from '@clerk/nextjs';
+
+type Generation = {
+    id: string;
+    prompt: string;
+    image_url: string;
+    aspect_ratio: string | null;
+    created_at: string;
+}
 
 function Sidebar() {
+    const [history, setHistory] = useState<Generation[]>([]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     
+    useEffect(() => {
+        async function getHistory() {
+            const res = await fetch("/api/history");
+            if(!res.ok) return;
+
+            const data = await res.json();
+            if(data.success){
+                setHistory(data.generations ?? []);
+            }
+        }
+
+        getHistory();
+    }, []);
+
     return (
         <aside className="h-screen flex-shrink-0">
-            <div className={`flex h-full flex-col overflow-y-auto bg-slate-50 pt-8 dark:border-slate-700 dark:bg-slate-900 transition-all duration-300 ${isSidebarOpen ? "w-64" : "w-16"}`}>
-                
+            <div className={`flex h-full flex-col overflow-y-auto bg-slate-50 pt-8 dark:border-slate-700 dark:bg-slate-900 transition-all duration-300 ${isSidebarOpen ? "w-64" : "w-16"}`}>              
                 <div className="flex px-4 items-center justify-between gap-2">
                     {isSidebarOpen && 
                     (<h2 className="text-lg font-medium text-slate-800 dark:text-slate-200 truncate">
@@ -44,14 +67,17 @@ function Sidebar() {
 
                 {/* Previous chats container */}
                 <div className="flex-1 overflow-y-auto px-2 py-4">
-                    <button className="flex flex-col w-full px-3 py-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition-colors">
-                        {isSidebarOpen && (
-                            <>
-                                <h1 className="text-left text-sm text-slate-700 dark:text-slate-300">chat 1</h1>
-                                <p className="text-left text-xs text-slate-500 dark:text-slate-400">date 1</p>
-                            </>
-                        )}
-                    </button>
+                    {history.map((item) => 
+                        (
+                        <button key={item.id} className="flex flex-col w-full px-3 py-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition-colors">
+                            {isSidebarOpen && (
+                                <>
+                                    <h1 className="text-left text-sm text-slate-700 dark:text-slate-300">{item.prompt}</h1>
+                                    <p className="text-left text-xs text-slate-500 dark:text-slate-400">{new Date(item.created_at).toLocaleDateString()}</p>
+                                </>
+                            )}
+                        </button>
+                    ))}
                 </div>
 
                 <div className="w-full space-y-2 px-2 py-4 border-t border-slate-200 dark:border-slate-800">
@@ -71,7 +97,7 @@ function Sidebar() {
                             <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"></path>
                             <path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855"></path>
                         </svg>
-                        {isSidebarOpen && <span>User</span>}
+                        {isSidebarOpen && <UserButton afterSignOutUrl="/" />}
                     </button>
                     <button className="flex w-full gap-x-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition-colors duration-200 hover:bg-slate-200 focus:outline-none dark:text-slate-200 dark:hover:bg-slate-800">
                         <svg

@@ -17,7 +17,6 @@ export async function upsertUserFromClerk(user: AppUserIdentity): Promise<DbUser
       {
         id: user.id,
         email: user.email,
-        image_url: user.imageUrl,
       },
       { onConflict: 'id' },
     )
