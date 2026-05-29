@@ -6,13 +6,26 @@ import { createGeneration, findSimilarGeneration } from '@/lib/db/generations';
 import { upsertUserFromClerk } from '@/lib/db/users';
 import { generatePromptEmbedding } from '@/lib/embeddings';
 import { uploadGeneratedImage } from '@/lib/cloudinary';
+import fs from 'fs';
 
 const defaultAspectRatio = '1:1';
+
+function setupGoogleCredentials() {
+  if (process.env.GOOGLE_APPLICATION_CREDENTIALS) return;
+  if (!process.env.GOOGLE_CREDENTIALS_JSON) throw new Error('Missing Google credentials');
+  
+  const credentialsPath = '/tmp/google-credentials.json';
+  fs.writeFileSync(credentialsPath, process.env.GOOGLE_CREDENTIALS_JSON);
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath;
+}
+
 
 export async function POST(req: Request) {
   const requestId = Math.random().toString(36).slice(2);
 
   try {
+    setupGoogleCredentials(); // for vercel deployment
+
     // validate request
     const {prompt, size} = await req.json();
 
