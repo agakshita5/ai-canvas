@@ -103,7 +103,7 @@ export async function POST(req: Request) {
     console.error(`image generation error [requestId=${requestId}]`, error);
   
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: error instanceof Error ? error.message : "Something went wrong" },
       { status: 500 }
     );
   }

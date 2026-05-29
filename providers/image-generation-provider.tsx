@@ -49,7 +49,7 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
                 console.log('error while generating: ',data.error);
             }
         }catch(error){
-            setError(error);
+            setError(error instanceof Error ? error.message : "Something went wrong");
             return false;
         }finally{
             setLoading(false);
