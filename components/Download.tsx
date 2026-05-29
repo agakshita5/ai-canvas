@@ -7,33 +7,21 @@ export default function Download(){
         if(!imageUrl) return;
         // stackoverflow
         try{
-            const b64toBlob = (imageUrl, contentType='', sliceSize=512) => {
-                const byteCharacters = atob(imageUrl);
-                const byteArrays = [];
-                for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-                    const slice = byteCharacters.slice(offset, offset + sliceSize);
-                    const byteNumbers = new Array(slice.length);
-                    for (let i = 0; i < slice.length; i++) {
-                    byteNumbers[i] = slice.charCodeAt(i);
-                    }
-                    const byteArray = new Uint8Array(byteNumbers);
-                    byteArrays.push(byteArray);
-                }
-                const blob = new Blob(byteArrays, {type: contentType});
-                return blob;
-            }
-            const blob = b64toBlob(imageUrl, 'image/png');
+            const response = await fetch(imageUrl);
+            if(!response.ok) throw new Error("Failed to fetch image");
+
+            const blob = await response.blob();
             const blobUrl = URL.createObjectURL(blob);
 
             const link = document.createElement('a');
-            link.href = imageUrl;
+            link.href = blobUrl;
             link.download = 'download-generated.png';
-            link.target = '_blank';
-            link.rel = 'noopener noreferrer';
 
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            
+            URL.revokeObjectURL(blobUrl);
         }catch(error){
             console.error('Download failed:', error);
         }
