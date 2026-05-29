@@ -97,7 +97,7 @@ function Sidebar() {
                             <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"></path>
                             <path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855"></path>
                         </svg>
-                        {isSidebarOpen && <UserButton afterSignOutUrl="/" />}
+                        {isSidebarOpen && <UserButton />}
                     </button>
                     <button className="flex w-full gap-x-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition-colors duration-200 hover:bg-slate-200 focus:outline-none dark:text-slate-200 dark:hover:bg-slate-800">
                         <svg
