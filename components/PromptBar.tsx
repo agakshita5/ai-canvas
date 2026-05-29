@@ -18,7 +18,9 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
     const [size, setSize] = useState('');
     const router = useRouter();
 
-    async function handleSubmit(e: SubmitEvent) {
+    // SubmitEvent: browser/DOM type; React expects react form event
+    // async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) { OR
+    const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
         if(!input || !size) return;
 
