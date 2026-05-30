@@ -24,7 +24,7 @@ export default function AuthButtons() {
         >
           Open Canvas
         </Link>
-        <UserButton />
+        <UserButton />    
         </>
       )}
     </div>

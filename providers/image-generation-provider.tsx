@@ -44,6 +44,7 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
                 setImageUrl(data.imageUrl);
                 setLastPrompt(prompt);
                 setLastSize(size);
+                window.dispatchEvent(new Event('generation-created'));
                 return true;
             }else{
                 console.log('error while generating: ',data.error);

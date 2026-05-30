@@ -17,6 +17,5 @@ export async function GET(){
         throw error;
     }
 
-    return NextResponse.json({ generations: data });
+    return NextResponse.json({ success: true, generations: data });
 }
-

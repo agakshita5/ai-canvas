@@ -1,7 +1,7 @@
 'use client';
 
+import { UserButton } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import { UserButton } from '@clerk/nextjs';
 
 type Generation = {
     id: string;
@@ -27,6 +27,11 @@ function Sidebar() {
         }
 
         getHistory();
+        window.addEventListener('generation-created', getHistory);
+
+        return () => {
+            window.removeEventListener('generation-created', getHistory);
+        };
     }, []);
 
     return (
@@ -81,41 +86,7 @@ function Sidebar() {
                 </div>
 
                 <div className="w-full space-y-2 px-2 py-4 border-t border-slate-200 dark:border-slate-800">
-                    <button className="flex w-full gap-x-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition-colors duration-200 hover:bg-slate-200 focus:outline-none dark:text-slate-200 dark:hover:bg-slate-800">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5 flex-shrink-0"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
-                            <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"></path>
-                            <path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855"></path>
-                        </svg>
-                        {isSidebarOpen && <UserButton />}
-                    </button>
-                    <button className="flex w-full gap-x-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition-colors duration-200 hover:bg-slate-200 focus:outline-none dark:text-slate-200 dark:hover:bg-slate-800">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5 flex-shrink-0"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M19.875 6.27a2.225 2.225 0 0 1 1.125 1.948v7.284c0 .809 -.443 1.555 -1.158 1.948l-6.75 4.27a2.269 2.269 0 0 1 -2.184 0l-6.75 -4.27a2.225 2.225 0 0 1 -1.158 -1.948v-7.285c0 -.809 .443 -1.554 1.158 -1.947l6.75 -3.98a2.33 2.33 0 0 1 2.25 0l6.75 3.98h-.033z"></path>
-                            <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"></path>
-                        </svg>
-                        {isSidebarOpen && <span>Settings</span>}
-                    </button>
+                    <UserButton />
                 </div>
             </div>
         </aside>
