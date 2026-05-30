@@ -2,7 +2,7 @@ import { useImageGeneration } from "@/providers/image-generation-provider";
 
 export default function Download(){
     const {imageUrl}=useImageGeneration();
-    // download directly from cloudinary link 
+
     async function handleDownload() {
         if(!imageUrl) return;
         // stackoverflow
@@ -20,7 +20,7 @@ export default function Download(){
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
+
             URL.revokeObjectURL(blobUrl);
         }catch(error){
             console.error('Download failed:', error);
@@ -42,3 +42,5 @@ export default function Download(){
         </>
     );
 }
+// https://levlorwyiiveyoofffsi.supabase.co/storage/v1/object/sign/generated-images/user_3ED82KaG7Y9uURQknDayAYwjvq3/879a83bf-6896-4a51-924e-092d4ec05b1e.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV82MGJhYTVlYS0wMzZkLTQwZDYtYTg3Ny01YjExNGNjNWEyOGUiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJnZW5lcmF0ZWQtaW1hZ2VzL3VzZXJfM0VEODJLYUc3WTl1VVJRa25EYXlBWXdqdnEzLzg3OWE4M2JmLTY4OTYtNGE1MS05MjRlLTA5MmQ0ZWMwNWIxZS5wbmciLCJpYXQiOjE3ODAxNDM0OTgsImV4cCI6MTc4MDIyOTg5OH0.BeS0Ko-Mub-xUsaqsHZ6fvCj0LjmMefFThvGuvgYzI0
+// http://localhost:3000/generated-images/user_3ED82KaG7Y9uURQknDayAYwjvq3/879a83bf-6896-4a51-924e-092d4ec05b1e.png

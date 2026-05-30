@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/clerk';
 import { createGeneration } from '@/lib/db/generations';
 import { upsertUserFromClerk } from '@/lib/db/users';
-import { uploadGeneratedImage } from '@/lib/cloudinary';
+import { uploadGeneratedImage } from '@/lib/db/storage';
 import fs from 'fs';
 
 const defaultAspectRatio = '1:1';
@@ -53,22 +53,21 @@ export async function POST(req: Request) {
 
     if (!image.base64) throw new Error('image generation failed');
 
-    // TODO shift storage to sb
-    // upload generated image to cloudinary
-    const uploadedImage = await uploadGeneratedImage(image.base64);
+    // upload generated image to supabase
+    const uploadedImage = await uploadGeneratedImage(image.base64, user.id);
 
     // save new generation in db
     await createGeneration({
       userId: user.id,
       prompt,
       imageUrl: uploadedImage.imageUrl,
+      sbPublicId: uploadedImage.path,
       aspectRatio: size || defaultAspectRatio,
     });
 
     return NextResponse.json({
       success: true,
       imageUrl: uploadedImage.imageUrl,
-      source: 'generated',
       prompt,
     });
   } catch (error) {
