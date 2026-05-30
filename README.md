@@ -1,20 +1,18 @@
 # AI Canvas
 
-AI-powered image generation platform. Generate stunning images from text prompts with semantic search to find similar generations.
+AI-powered image generation platform. Generate stunning images from text prompts.
 
 ## Tech Stack
 
 - **Frontend:** Next.js 16, React 19, TypeScript, Tailwind CSS
 - **AI:** Vertex AI, Vercel AI SDK
-- **Database:** Supabase
-- **Storage:** Cloudinary
+- **Database & Storage:** Supabase
 - **Auth:** Clerk
 
 ## Features
 
 - **Image Generation** – Generate images using Google Vertex AI
-- **Semantic Search** – Find similar generations using embeddings
-- **Cloud Storage** – Store images via Cloudinary
+- **Cloud Storage** – Store images via Supabase
 - **Database** – Track generations in Supabase
 - **Authentication** – Secure auth with Clerk
 
@@ -28,7 +26,6 @@ npm install
 NEXT_PUBLIC_SUPABASE_URL=...
 SUPABASE_SECRET_KEY=...
 GOOGLE_APPLICATION_CREDENTIALS=...
-CLOUDINARY_URL=...
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=...
 CLERK_SECRET_KEY=...
 
@@ -41,7 +38,6 @@ npm run dev
 1. Sign in with Clerk
 2. Enter a prompt and select image size
 3. Generate image – AI creates and stores it
-4. Search similar generations using semantic matching
 
 ## Scripts
 
