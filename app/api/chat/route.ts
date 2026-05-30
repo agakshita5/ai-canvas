@@ -2,9 +2,8 @@ import { generateImage } from 'ai';
 import { vertex } from '@ai-sdk/google-vertex';
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/clerk';
-import { createGeneration, findSimilarGeneration } from '@/lib/db/generations';
+import { createGeneration } from '@/lib/db/generations';
 import { upsertUserFromClerk } from '@/lib/db/users';
-import { generatePromptEmbedding } from '@/lib/embeddings';
 import { uploadGeneratedImage } from '@/lib/cloudinary';
 import fs from 'fs';
 
@@ -18,7 +17,6 @@ function setupGoogleCredentials() {
   fs.writeFileSync(credentialsPath, process.env.GOOGLE_CREDENTIALS_JSON);
   process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath;
 }
-
 
 export async function POST(req: Request) {
   const requestId = Math.random().toString(36).slice(2);
@@ -46,32 +44,7 @@ export async function POST(req: Request) {
     }
     await upsertUserFromClerk(user);
 
-    // generate embedding for current prompt
-    const promptEmbedding = await generatePromptEmbedding(prompt);
-
-    // check for old similar prompts in db
-    const matchedGeneration = await findSimilarGeneration(promptEmbedding, 0.9, 1);
-
-    if (matchedGeneration) { // match found
-      // save cache history - per user history
-        await createGeneration({
-        userId: user.id,
-        prompt,
-        promptEmbedding,
-        imageUrl: matchedGeneration.image_url,
-        cloudinaryPublicId: matchedGeneration.cloudinary_public_id,
-        aspectRatio: size || defaultAspectRatio,
-      });
-
-      return NextResponse.json({
-        success: true,
-        imageUrl: matchedGeneration.image_url,
-        source: 'cache',
-        prompt,
-      });
-    }
-
-    // generate image if no match found
+    // generate image 
     const { image } = await generateImage({
       model: vertex.image('imagen-3.0-generate-001'),
       prompt,
@@ -80,6 +53,7 @@ export async function POST(req: Request) {
 
     if (!image.base64) throw new Error('image generation failed');
 
+    // TODO shift storage to sb
     // upload generated image to cloudinary
     const uploadedImage = await uploadGeneratedImage(image.base64);
 
@@ -87,9 +61,7 @@ export async function POST(req: Request) {
     await createGeneration({
       userId: user.id,
       prompt,
-      promptEmbedding,
       imageUrl: uploadedImage.imageUrl,
-      cloudinaryPublicId: uploadedImage.publicId,
       aspectRatio: size || defaultAspectRatio,
     });
 
