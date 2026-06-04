@@ -67,9 +67,9 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                         <textarea
                             id="chat-input"
                             className="flex-1 resize-none px-2 bg-slate-200 text-sm text-slate-900 dark:bg-slate-800 dark:text-slate-200 dark:placeholder-slate-400 focus:outline-none focus:ring-0 focus:ring-transparent sm:text-base"
-                            placeholder= {variant==='canvas' ? lastPrompt : "Enter your idea & image resolution"}
+                            placeholder= "Enter your idea & image resolution"
                             rows={1}
-                            value={input}
+                            value={variant==='canvas' ? lastPrompt : input}
                             required
                             onChange={(e) => {
                                 setInput(e.currentTarget.value);
