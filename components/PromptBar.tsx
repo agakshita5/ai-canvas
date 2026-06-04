@@ -12,9 +12,11 @@ interface PromptBarProps{
 }
 
 export default function PromptBar({variant = 'home'}:PromptBarProps){
-    const {generate, loading, lastPrompt, lastSize} = useImageGeneration();
+    const {generate, loading, imageUrl, lastPrompt, lastSize} = useImageGeneration();
     const aspectRatioList = ["1:1", "3:4", "4:3", "9:16", "16:9"];
-    const [input, setInput] = useState(variant === 'canvas' ? lastPrompt : '');
+    // user edits kept per chat (keyed by its image url), so switching history never mixes them
+    const [drafts, setDrafts] = useState<Record<string, string>>({});
+    const input = drafts[imageUrl] ?? lastPrompt; // this chat's edit if any, else its own prompt
     const [size, setSize] = useState('');
     const router = useRouter();
 
@@ -67,12 +69,12 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                         <textarea
                             id="chat-input"
                             className="flex-1 resize-none px-2 bg-slate-200 text-sm text-slate-900 dark:bg-slate-800 dark:text-slate-200 dark:placeholder-slate-400 focus:outline-none focus:ring-0 focus:ring-transparent sm:text-base"
-                            placeholder= "Enter your idea & image resolution"
+                            placeholder= {imageUrl && lastPrompt ? "" : "Enter your idea & image resolution"}
                             rows={1}
-                            value={variant==='canvas' ? lastPrompt : input}
+                            value={input}
                             required
                             onChange={(e) => {
-                                setInput(e.currentTarget.value);
+                                setDrafts({...drafts, [imageUrl]: e.currentTarget.value});
                                 e.currentTarget.style.height = "auto";
                                 e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
                             }}
