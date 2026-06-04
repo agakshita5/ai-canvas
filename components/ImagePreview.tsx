@@ -2,10 +2,42 @@
 
 import Download from "@/components/Download";
 import Link from 'next/link';
+import { useEffect, useState } from "react";
 import {useImageGeneration} from "@/providers/image-generation-provider";
 
 export default function ImagePreview(){
     const {imageUrl} = useImageGeneration();
+    const [pos, setPos] = useState({x: 0, y: 0});
+
+    // restore saved position when image changes, so work survives history switches
+    useEffect(() => {
+        if(!imageUrl) return;
+        const saved = localStorage.getItem(`canvas-pos:${imageUrl}`);
+        setPos(saved ? JSON.parse(saved) : {x: 0, y: 0});
+    }, [imageUrl]);
+
+    function startDrag(e: React.PointerEvent) {
+        e.preventDefault();
+        // offset between pointer and image position, kept constant while dragging
+        const startX = e.clientX - pos.x;
+        const startY = e.clientY - pos.y;
+
+        function onMove(ev: PointerEvent) {
+            setPos({x: ev.clientX - startX, y: ev.clientY - startY});
+        }
+        function onUp(ev: PointerEvent) {
+            // auto-save final position for this image
+            localStorage.setItem(`canvas-pos:${imageUrl}`, JSON.stringify({x: ev.clientX - startX, y: ev.clientY - startY}));
+            window.removeEventListener('pointermove', onMove);
+        }
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp, {once: true});
+    }
+
+    function resetCanvas() {
+        localStorage.removeItem(`canvas-pos:${imageUrl}`);
+        setPos({x: 0, y: 0});
+    }
 
     return (
         <>
@@ -23,8 +55,11 @@ export default function ImagePreview(){
                                     </div>                          
                                     {/* image */}
                                     {imageUrl ? 
-                                        (<img 
-                                            className="rounded-xl z-10 shadow-2xl shadow-[0_0_60px_10px_rgba(22,36,86,0.5)] max-h-[550px] max-w-full object-contain hover:scale-[1.02] transition duration-300" 
+                                        (<img
+                                            className="rounded-xl z-10 shadow-2xl shadow-[0_0_60px_10px_rgba(22,36,86,0.5)] max-h-[550px] max-w-full object-contain cursor-grab active:cursor-grabbing"
+                                            style={{transform: `translate(${pos.x}px, ${pos.y}px)`}}
+                                            onPointerDown={startDrag}
+                                            draggable={false}
                                             src={imageUrl}
                                             alt="Generated preview"
                                         />)
@@ -37,11 +72,17 @@ export default function ImagePreview(){
                     </div>
                 </div>
 
-                <div className="flex absolute top-8 right-8 z-20 gap-2">
-                    <Link href="/" className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-slate-200 shadow-md transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 sm:text-base" >
-                        Go Back
-                    </Link>
-                    <Download />
+                <div className="flex flex-col items-end absolute top-8 right-8 z-20 gap-2">
+                    <div className="flex gap-2">
+                        <Link href="/" className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-slate-200 shadow-md transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 sm:text-base" >
+                            Go Back
+                        </Link>
+                        <Download />
+                    </div>
+                    {/* reset image back to its original spot */}
+                    <button onClick={resetCanvas} className="rounded-lg bg-slate-700 px-4 py-2 text-sm font-medium text-slate-200 shadow-md transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-400 sm:text-base">
+                        Reset
+                    </button>
                 </div>
             </div>
         </>
