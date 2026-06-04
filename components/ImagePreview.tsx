@@ -25,7 +25,7 @@ export default function ImagePreview(){
         function onMove(ev: PointerEvent) {
             setPos({x: ev.clientX - startX, y: ev.clientY - startY});
         }
-        function onUp(ev: PointerEvent) {
+        function onUp(ev: PointerEvent) { // on drag release
             // auto-save final position for this image
             localStorage.setItem(`canvas-pos:${imageUrl}`, JSON.stringify({x: ev.clientX - startX, y: ev.clientY - startY}));
             window.removeEventListener('pointermove', onMove);
@@ -57,9 +57,9 @@ export default function ImagePreview(){
                                     {imageUrl ? 
                                         (<img
                                             className="rounded-xl z-10 shadow-2xl shadow-[0_0_60px_10px_rgba(22,36,86,0.5)] max-h-[550px] max-w-full object-contain cursor-grab active:cursor-grabbing"
-                                            style={{transform: `translate(${pos.x}px, ${pos.y}px)`}}
-                                            onPointerDown={startDrag}
-                                            draggable={false}
+                                            style={{transform: `translate(${pos.x}px, ${pos.y}px)`}} // move image
+                                            onPointerDown={startDrag} // tracks pointer offset
+                                            draggable={false} // blocks browser's native img-drag ghost
                                             src={imageUrl}
                                             alt="Generated preview"
                                         />)
@@ -72,15 +72,15 @@ export default function ImagePreview(){
                     </div>
                 </div>
 
-                <div className="flex flex-col items-end absolute top-8 right-8 z-20 gap-2">
-                    <div className="flex gap-2">
-                        <Link href="/" className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-slate-200 shadow-md transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 sm:text-base" >
-                            Go Back
+                <div className="flex flex-col items-end absolute top-8 right-8 z-20 gap-155">
+                    <div className="flex gap-5">
+                        <Link href="/" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-slate-200 shadow-md transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 sm:text-base" >
+                            Home
                         </Link>
                         <Download />
                     </div>
                     {/* reset image back to its original spot */}
-                    <button onClick={resetCanvas} className="rounded-lg bg-slate-700 px-4 py-2 text-sm font-medium text-slate-200 shadow-md transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-400 sm:text-base">
+                    <button onClick={resetCanvas} className=" rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-slate-200 shadow-md transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-400 sm:text-base">
                         Reset
                     </button>
                 </div>
