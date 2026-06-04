@@ -12,7 +12,7 @@ export default function ImagePreview(){
             <div className="flex-1 flex flex-col bg-black overflow-hidden">
 
                 {/* MAIN AREA */}
-                <div className="flex-1 overflow-auto flex items-center justify-center p-4 pb-10">
+                <div className="flex-1 overflow-auto flex items-center justify-center p-4 pb-10  bg-[radial-gradient(circle,rgba(148,163,184,0.18)_1.5px,transparent_1px)] [background-size:24px_24px]">
                     <div className="flex items-center justify-center w-full h-full">
                         {/* CANVAS (image area) */}
                         <div className="w-full max-w-5xl flex items-center justify-center">
@@ -20,7 +20,6 @@ export default function ImagePreview(){
                                 {/* Canvas with blur background */}
                                 <div className="w-full min-h-[600px] flex items-center justify-center rounded-xl shadow-2xl relative">
                                     <div className="absolute inset-0 flex items-center justify-center z-0">
-                                        <div className="w-[85%] h-[85%] bg-black/60 blur-2xl rounded-lg"></div>
                                     </div>                          
                                     {/* image */}
                                     {imageUrl ? 
