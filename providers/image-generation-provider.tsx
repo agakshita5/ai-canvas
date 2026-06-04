@@ -11,6 +11,7 @@ interface ImageContextType{
     lastSize: string;
     lastPrompt: string;
     generate: (prompt: string, size: string) => Promise<boolean>;
+    selectGeneration: (imageUrl: string, prompt: string, size: string) => void;
 }
 
 const ImageContext = createContext<ImageContextType | undefined>(undefined);
@@ -58,8 +59,16 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
         return false;
     }
 
+    // show a previously generated image (e.g. picked from sidebar history) on the canvas
+    function selectGeneration(imageUrl: string, prompt: string, size: string) {
+        setImageUrl(imageUrl);
+        setLastPrompt(prompt);
+        setLastSize(size);
+        setError(''); // so a stale error from a failed generation doesn't linger over the selected image
+    }
+
     return (
-        <ImageContext.Provider value={{imageUrl, loading, error, lastPrompt, lastSize, generate}}>
+        <ImageContext.Provider value={{imageUrl, loading, error, lastPrompt, lastSize, generate, selectGeneration}}>
             {children}
         </ImageContext.Provider>
     );
