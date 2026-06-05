@@ -38,19 +38,19 @@ function Sidebar() {
 
     return (
         <aside className="h-screen flex-shrink-0">
-            <div className={`flex h-full flex-col overflow-y-auto bg-slate-50 pt-8 dark:border-slate-700 dark:bg-slate-900 transition-all duration-300 ${isSidebarOpen ? "w-64" : "w-16"}`}>              
+            <div className={`flex h-full flex-col overflow-y-auto bg-[#36213E] pt-8 transition-all duration-300 ${isSidebarOpen ? "w-64" : "w-16"}`}>
                 <div className="flex px-4 items-center justify-between gap-2">
-                    {isSidebarOpen && 
-                    (<h2 className="text-lg font-medium text-slate-800 dark:text-slate-200 truncate">
+                    {isSidebarOpen &&
+                    (<h2 className="text-lg font-medium text-[#ededed] truncate">
                         Chats
                     </h2>)}
-                    <button 
+                    <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="flex-shrink-0 p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition-colors"
+                        className="flex-shrink-0 p-1 hover:bg-white/10 rounded transition-colors"
                     >
                         {/* got svg from opening .svg file in text editor */}
-                        <svg 
-                            className="h-5 w-5 text-blue-600" 
+                        <svg
+                            className="h-5 w-5 text-[#ededed]"
                             viewBox="0 0 512 512"
                             fill="currentColor"
                         >
@@ -62,7 +62,7 @@ function Sidebar() {
                 </div>
                 {/* new chat btn */}
                 <div className="mx-2 mt-8">
-                    <button onClick={()=> selectGeneration('','','')} className="flex w-full gap-x-4 rounded-lg border border-slate-300 p-4 items-center text-sm font-medium text-slate-700 transition-colors duration-200 hover:bg-slate-200 focus:outline-none dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
+                    <button onClick={()=> selectGeneration('','','')} className="flex w-full gap-x-4 rounded-lg bg-[#89808d] p-4 items-center text-sm font-medium text-[#ededed] transition-colors duration-200 hover:bg-[#746c78] focus:outline-none">
                         <svg className="h-6 w-6 flex-shrink-1" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M12 5l0 14"></path>
@@ -79,19 +79,19 @@ function Sidebar() {
                         <button
                             key={item.id}
                             onClick={() => selectGeneration(item.image_url, item.prompt, item.aspect_ratio ?? '')}
-                            className={`flex flex-col w-full px-3 py-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition-colors ${item.image_url === imageUrl ? "bg-slate-200 dark:bg-slate-800" : ""}`} // highlight session being viewed
+                            className={`flex flex-col w-full px-3 py-2 hover:bg-[#60517c65] rounded transition-colors ${isSidebarOpen && item.image_url === imageUrl ? "bg-[#60517c65]" : ""}`} // highlight session being viewed
                         >
                             {isSidebarOpen && (
                                 <>
-                                    <h1 className="text-left text-sm text-slate-700 dark:text-slate-300">{item.prompt}</h1>
-                                    <p className="text-left text-xs text-slate-500 dark:text-slate-400">{new Date(item.created_at).toLocaleDateString()}</p>
+                                    <h1 className="text-left text-sm text-[#ededed]">{item.prompt}</h1>
+                                    <p className="text-left text-xs text-[#ededed]/70">{new Date(item.created_at).toLocaleDateString()}</p>
                                 </>
                             )}
                         </button>
                     ))}
                 </div>
 
-                <div className="w-full space-y-2 px-2 py-4 border-t border-slate-200 dark:border-slate-800">
+                <div className="w-full space-y-2 px-2 py-4 border-t border-white/20">
                     <UserButton />
                 </div>
             </div>

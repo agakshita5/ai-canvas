@@ -30,7 +30,7 @@ export default function Download(){
         <>
             <div className="flex gap-2">
                 <button onClick={handleDownload} disabled={!imageUrl}
-                    className="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-md"
+                    className="p-2 rounded-lg bg-[#89808d] hover:bg-[#746c78] text-[#ededed] transition-colors shadow-md"
                     title="Download image"
                 >
                     <svg className="h-6 w-6" viewBox="0 0 512 512" fill="currentColor">

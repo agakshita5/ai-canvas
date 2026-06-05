@@ -41,10 +41,10 @@ export default function ImagePreview(){
 
     return (
         <>
-            <div className="flex-1 flex flex-col bg-black overflow-hidden">
+            <div className="flex-1 flex flex-col bg-[#554971] overflow-hidden">
 
                 {/* MAIN AREA */}
-                <div className="flex-1 overflow-auto flex items-center justify-center p-4 pb-10  bg-[radial-gradient(circle,rgba(148,163,184,0.18)_1.5px,transparent_1px)] [background-size:24px_24px]">
+                <div className="flex-1 overflow-auto flex items-center justify-center p-4 pb-10  bg-[radial-gradient(circle,rgba(237,237,237,0.18)_1.5px,transparent_1px)] [background-size:24px_24px]">
                     <div className="flex items-center justify-center w-full h-full">
                         {/* CANVAS (image area) */}
                         <div className="w-full max-w-5xl flex items-center justify-center">
@@ -56,7 +56,7 @@ export default function ImagePreview(){
                                     {/* image */}
                                     {imageUrl ? 
                                         (<img
-                                            className="rounded-xl z-10 shadow-2xl shadow-[0_0_60px_10px_rgba(22,36,86,0.5)] max-h-[550px] max-w-full object-contain cursor-grab active:cursor-grabbing"
+                                            className="rounded-xl z-10 shadow-xl shadow-[0_0_60px_10px_rgba(22,36,86,0.5)] max-h-[550px] max-w-full object-contain cursor-grab active:cursor-grabbing"
                                             style={{transform: `translate(${pos.x}px, ${pos.y}px)`}} // move image
                                             onPointerDown={startDrag} // tracks pointer offset
                                             draggable={false} // blocks browser's native img-drag ghost
@@ -64,7 +64,7 @@ export default function ImagePreview(){
                                             alt="Generated preview"
                                         />)
                                     :
-                                        (<p className="text-lg text-slate-400"> Write in your prompt </p>)
+                                        (<p className="text-lg text-[#ededed]"> Write in your prompt </p>)
                                     }
                                 </div>
                             </div>
@@ -74,13 +74,13 @@ export default function ImagePreview(){
 
                 <div className="flex flex-col items-end absolute top-8 right-8 z-20 gap-155">
                     <div className="flex gap-5">
-                        <Link href="/" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-slate-200 shadow-md transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 sm:text-base" >
+                        <Link href="/" className="rounded-lg bg-[#89808d] px-4 py-2 text-sm font-medium text-[#ededed] shadow-md transition hover:bg-[#746c78] focus:outline-none focus:ring-4 focus:ring-[#63768D]/50 sm:text-base" >
                             Home
                         </Link>
                         <Download />
                     </div>
                     {/* reset image back to its original spot */}
-                    <button onClick={resetCanvas} className=" rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-slate-200 shadow-md transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-400 sm:text-base">
+                    <button onClick={resetCanvas} className=" rounded-lg bg-[#89808d] px-4 py-2 text-sm font-medium text-[#ededed] shadow-md transition hover:bg-[#746c78] focus:outline-none focus:ring-4 focus:ring-[#63768D]/50 sm:text-base">
                         Reset
                     </button>
                 </div>

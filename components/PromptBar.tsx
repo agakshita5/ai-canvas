@@ -42,9 +42,9 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                 {/* prompt bar */}
                 <form onSubmit={handleSubmit} className='w-full flex justify-center px-4 gap-10'>
                     <label htmlFor="chat-input" className="sr-only">Enter your idea & image resolution</label>
-                    <div className="flex w-full max-w-3xl items-center gap-2 rounded-xl bg-slate-200 p-2 shadow-md dark:bg-slate-800">
+                    <div className="flex w-full max-w-3xl items-center gap-2 rounded-xl bg-[#36213E] p-2 shadow-md">
                         {/* voice input button */}
-                        <button type="button" className="p-2 text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-600" >
+                        <button type="button" className="p-2 text-[#ededed] hover:text-[#ededed]/50" >
                             <svg
                                 aria-hidden="true"
                                 className="h-5 w-5"
@@ -68,7 +68,7 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                         </button>
                         <textarea
                             id="chat-input"
-                            className="flex-1 resize-none px-2 bg-slate-200 text-sm text-slate-900 dark:bg-slate-800 dark:text-slate-200 dark:placeholder-slate-400 focus:outline-none focus:ring-0 focus:ring-transparent sm:text-base"
+                            className="flex-1 resize-none px-2 bg-[#36213E] text-sm text-[#ededed] placeholder-[#ededed]/50 focus:outline-none focus:ring-0 focus:ring-transparent sm:text-base"
                             placeholder= {imageUrl && lastPrompt ? "" : "Enter your idea & image resolution"}
                             rows={1}
                             value={input}
@@ -81,18 +81,18 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                         ></textarea>
                         {/* size/aspect-ratio dropdown */}
                         <Menu as="div" className="relative">
-                            <MenuButton className="inline-flex w-fit rounded-md px-2 py-1 text-sm font-semibold text-slate-500 hover:bg-white/5 dark:text-slate-400 dark:hover:bg-white/5 ">
+                            <MenuButton className="inline-flex w-fit rounded-md px-2 py-1 text-sm font-semibold text-[#ededed] hover:bg-white/5 ">
                                 {size || lastSize || "Size"}
-                                <ChevronDownIcon aria-hidden="true" className="-mr-1 size-5 text-gray-400" />
+                                <ChevronDownIcon aria-hidden="true" className="-mr-1 size-5 text-[#ededed]" />
                             </MenuButton>
 
-                            <MenuItems transition className={`absolute z-10 w-56 rounded-md ${variant==='canvas'? 'right-0 mb-2 origin-bottom-right bottom-full' : 'right-0 mt-2 origin-top-right'} max-h-64 overflow-y-auto bg-gray-800 outline-1 -outline-offset-1 outline-white/10 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in`} >
+                            <MenuItems transition className={`absolute z-10 w-56 rounded-md ${variant==='canvas'? 'right-0 mb-2 origin-bottom-right bottom-full' : 'right-0 mt-2 origin-top-right'} max-h-64 overflow-y-auto bg-[#63768D] outline-1 -outline-offset-1 outline-white/10 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in`} >
                                 <div className="py-1">
                                     {
                                     aspectRatioList.map((element)=>{
                                         return (
                                             <MenuItem key={element}>
-                                                <a onClick={() => setSize(element)} href="#" className="block px-4 py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:text-white data-focus:outline-hidden" >
+                                                <a onClick={() => setSize(element)} href="#" className="block px-4 py-2 text-sm text-[#ededed] data-focus:bg-white/10 data-focus:outline-hidden" >
                                                 {element}
                                                 </a>
                                             </MenuItem>
@@ -103,7 +103,7 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                             </MenuItems>
                         </Menu> 
                         {/* generate button */}
-                        <button type="submit" disabled={loading} className="rounded-lg bg-blue-700 p-2 text-sm font-medium text-slate-200 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:text-base" >
+                        <button type="submit" disabled={loading} className="rounded-lg p-2 text-sm font-medium text-[#ededed] bg-[#89808d] hover:bg-[#746c78]  sm:text-base" >
                             {loading ? 
                             (<svg
                                 className="h-6 w-6 animate-spin"
