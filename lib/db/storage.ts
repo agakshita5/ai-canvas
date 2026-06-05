@@ -12,10 +12,10 @@ export async function uploadGeneratedImage(imageBase64: string, userId: string) 
 
     if (uploadError) throw new Error(uploadError.message);
 
-    // since private bucket - use time-limited URL using createSignedUrl (for 3 days)
+    // since private bucket - use time-limited URL using createSignedUrl (for 30 days)
     const { data: signedData, error: signedError } = await supabase.storage
     .from('generated-images')
-    .createSignedUrl(uploadedData.path, 60 * 60 * 24 * 3);
+    .createSignedUrl(uploadedData.path, 60 * 60 * 24 * 30);
 
     if (signedError) throw new Error(signedError.message);
 
