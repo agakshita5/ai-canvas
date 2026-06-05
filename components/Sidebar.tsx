@@ -15,7 +15,7 @@ type Generation = {
 function Sidebar() {
     const [history, setHistory] = useState<Generation[]>([]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const {selectGeneration} = useImageGeneration();
+    const {selectGeneration, imageUrl} = useImageGeneration();
     
     useEffect(() => {
         async function getHistory() {
@@ -79,7 +79,7 @@ function Sidebar() {
                         <button
                             key={item.id}
                             onClick={() => selectGeneration(item.image_url, item.prompt, item.aspect_ratio ?? '')}
-                            className="flex flex-col w-full px-3 py-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition-colors"
+                            className={`flex flex-col w-full px-3 py-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition-colors ${item.image_url === imageUrl ? "bg-slate-200 dark:bg-slate-800" : ""}`} // highlight session being viewed
                         >
                             {isSidebarOpen && (
                                 <>
