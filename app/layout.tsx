@@ -25,9 +25,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}>
       <body className="min-h-full flex flex-col">
-        <ClerkProvider afterSignOutUrl="/">
+        <ClerkProvider afterSignOutUrl="/"
+        appearance={{
+          variables: {
+            colorPrimary: "var(--clerk-color-primary)",
+            colorPrimaryForeground: "var(--clerk-color-primary-foreground)",
+            colorBackground: "var(--clerk-color-background)",
+            colorForeground: "var(--clerk-color-foreground)",
+            colorMuted: "var(--clerk-color-muted)",
+            colorMutedForeground: "var(--clerk-color-muted-foreground)",
+          },
+        }}
+        >
           <ImageGenerationProvider>
             {children}
           </ImageGenerationProvider>
