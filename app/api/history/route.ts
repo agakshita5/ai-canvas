@@ -9,7 +9,7 @@ export async function GET(){
     const supabase = createSupabaseServerClient();
     const { data, error } = await supabase
     .from('generations')
-    .select('id, prompt, image_url, aspect_ratio, created_at')
+    .select('id, image_url, prompt, aspect_ratio, created_at, session_id')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
 

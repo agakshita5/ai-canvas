@@ -2,7 +2,7 @@
 
 import { UserButton } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import { useImageGeneration } from "@/providers/image-generation-provider";
+import { useImageGeneration, type CanvasImage } from "@/providers/image-generation-provider";
 
 type Generation = {
     id: string;
@@ -10,13 +10,21 @@ type Generation = {
     image_url: string;
     aspect_ratio: string | null;
     created_at: string;
+    session_id: string | null;
+}
+
+type Session = {
+    key: string;     
+    title: string;   
+    images: CanvasImage[]; 
+    latest: string;   
 }
 
 function Sidebar() {
     const [history, setHistory] = useState<Generation[]>([]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const {selectGeneration, imageUrl} = useImageGeneration();
-    
+    const {newSession, openSession, sessionId} = useImageGeneration();
+
     useEffect(() => {
         async function getHistory() {
             const res = await fetch("/api/history");
@@ -35,6 +43,21 @@ function Sidebar() {
             window.removeEventListener('generation-created', getHistory);
         };
     }, []);
+
+    // group flat history into one entry per chat session
+    const sessionsMap = new Map<string, Session>();
+    for (const g of history) {                       
+        const key = g.session_id ?? g.id;           
+        const img: CanvasImage = {id: g.id, url: g.image_url, prompt: g.prompt, aspectRatio: g.aspect_ratio ?? ''};
+        const existing = sessionsMap.get(key);
+        if (existing) {
+            existing.images.unshift(img);           
+            existing.title = g.prompt;
+        } else {
+            sessionsMap.set(key, {key, title: g.prompt, images: [img], latest: g.created_at});
+        }
+    }
+    const sessions = [...sessionsMap.values()].sort((a, b) => b.latest.localeCompare(a.latest));
 
     return (
         <aside className="h-screen flex-shrink-0">
@@ -62,7 +85,7 @@ function Sidebar() {
                 </div>
                 {/* new chat btn */}
                 <div className="mx-2 mt-8">
-                    <button onClick={()=> selectGeneration('','','')} className="flex w-full gap-x-4 rounded-lg bg-[#89808d] p-4 items-center text-sm font-medium text-[#ededed] transition-colors duration-200 hover:bg-[#746c78] focus:outline-none">
+                    <button onClick={()=> newSession()} className="flex w-full gap-x-4 rounded-lg bg-[#89808d] p-4 items-center text-sm font-medium text-[#ededed] transition-colors duration-200 hover:bg-[#746c78] focus:outline-none">
                         <svg className="h-6 w-6 flex-shrink-1" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M12 5l0 14"></path>
@@ -74,17 +97,17 @@ function Sidebar() {
 
                 {/* Previous chats container */}
                 <div className="flex-1 overflow-y-auto px-2 py-4">
-                    {history.map((item) => 
+                    {sessions.map((session) =>
                         (
                         <button
-                            key={item.id}
-                            onClick={() => selectGeneration(item.image_url, item.prompt, item.aspect_ratio ?? '')}
-                            className={`flex flex-col w-full px-3 py-2 hover:bg-[#60517c65] rounded transition-colors ${isSidebarOpen && item.image_url === imageUrl ? "bg-[#60517c65]" : ""}`} // highlight session being viewed
+                            key={session.key}
+                            onClick={() => openSession(session.key, session.images)}
+                            className={`flex flex-col w-full px-3 py-2 hover:bg-[#60517c65] rounded transition-colors ${isSidebarOpen && session.key === sessionId ? "bg-[#60517c65]" : ""}`} // highlight session being viewed
                         >
                             {isSidebarOpen && (
                                 <>
-                                    <h1 className="text-left text-sm text-[#ededed]">{item.prompt}</h1>
-                                    <p className="text-left text-xs text-[#ededed]/70">{new Date(item.created_at).toLocaleDateString()}</p>
+                                    <h1 className="text-left text-sm text-[#ededed]">{session.title}</h1>
+                                    <p className="text-left text-xs text-[#ededed]/70">{new Date(session.latest).toLocaleDateString()}</p>
                                 </>
                             )}
                         </button>

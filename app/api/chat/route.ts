@@ -25,7 +25,14 @@ export async function POST(req: Request) {
     setupGoogleCredentials(); // for vercel deployment
 
     // validate request
-    const {prompt, size} = await req.json();
+    const {prompt, size, sessionId} = await req.json();
+
+    // edits within a chat reuse the chat's sessionId
+    let resolvedSessionId = sessionId;
+    if (!resolvedSessionId?.trim()) {
+      console.warn('[chat] missing sessionId from client, generating server-side fallback');
+      resolvedSessionId = crypto.randomUUID();
+    }
 
     if (!prompt?.trim() || !size?.trim()) {
       return NextResponse.json(
@@ -57,18 +64,21 @@ export async function POST(req: Request) {
     const uploadedImage = await uploadGeneratedImage(image.base64, user.id);
 
     // save new generation in db
-    await createGeneration({
+    const generation = await createGeneration({
       userId: user.id,
       prompt,
       imageUrl: uploadedImage.imageUrl,
       sbPublicId: uploadedImage.path,
       aspectRatio: size || defaultAspectRatio,
+      sessionId: resolvedSessionId,
     });
 
     return NextResponse.json({
       success: true,
+      id: generation.id,
       imageUrl: uploadedImage.imageUrl,
       prompt,
+      aspectRatio: generation.aspect_ratio,
     });
   } catch (error) {
     console.error(`image generation error [requestId=${requestId}]`, error);

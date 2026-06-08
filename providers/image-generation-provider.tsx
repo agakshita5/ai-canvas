@@ -4,6 +4,8 @@
 
 import { createContext, useContext, useState, ReactNode  } from 'react';
 
+export type CanvasImage = {id: string, url: string, prompt: string, aspectRatio: string};
+
 interface ImageContextType{
     imageUrl: string;
     loading: boolean;
@@ -11,7 +13,10 @@ interface ImageContextType{
     lastSize: string;
     lastPrompt: string;
     generate: (prompt: string, size: string) => Promise<boolean>;
-    selectGeneration: (imageUrl: string, prompt: string, size: string) => void;
+    sessionId: string;
+    images: CanvasImage[];
+    newSession: () => void;
+    openSession: (id: string, imgs: CanvasImage[]) => void;
 }
 
 const ImageContext = createContext<ImageContextType | undefined>(undefined);
@@ -22,6 +27,17 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(false);
     const [lastPrompt, setLastPrompt] = useState<string>('');
     const [lastSize, setLastSize] = useState<string>('');
+    // each chat session keeps its own canvas images
+    const [sessions, setSessions] = useState<Record<string, CanvasImage[]>>({});
+    const [sessionId, setSessionId] = useState(() => crypto.randomUUID());
+    const images = sessions[sessionId] ?? [];
+
+    function addImage(img: CanvasImage) {
+        setSessions(prev => {
+            const current = prev[sessionId] ?? [];
+            return current.some(i => i.id === img.id) ? prev : {...prev, [sessionId]: [...current, img]};
+        });
+    }
 
     async function generate(prompt: string, size: string) {
         setLoading(true);
@@ -33,7 +49,7 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({prompt, size}),
+                body: JSON.stringify({prompt, size, sessionId}), 
             });
 
             const data = await res.json();
@@ -45,6 +61,7 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
                 setImageUrl(data.imageUrl);
                 setLastPrompt(prompt);
                 setLastSize(size);
+                addImage({id: data.id, url: data.imageUrl, prompt, aspectRatio: data.aspectRatio ?? size});
                 window.dispatchEvent(new Event('generation-created'));
                 return true;
             }else{
@@ -59,16 +76,27 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
         return false;
     }
 
-    // show a previously generated image (e.g. picked from sidebar history) on the canvas
-    function selectGeneration(imageUrl: string, prompt: string, size: string) {
-        setImageUrl(imageUrl);
-        setLastPrompt(prompt);
-        setLastSize(size);
-        setError(''); // so a stale error from a failed generation doesn't linger over the selected image
+    function newSession() {
+        setSessionId(crypto.randomUUID());
+        setImageUrl('');
+        setLastPrompt('');
+        setLastSize('');
+        setError('');
+    }
+
+    // open an existing chat 
+    function openSession(id: string, imgs: CanvasImage[]) {
+        setSessions(prev => ({...prev, [id]: imgs}));
+        setSessionId(id);
+        const last = imgs[imgs.length - 1]; 
+        setImageUrl(last?.url ?? '');
+        setLastPrompt(last?.prompt ?? '');
+        setLastSize(last?.aspectRatio ?? '');
+        setError('');
     }
 
     return (
-        <ImageContext.Provider value={{imageUrl, loading, error, lastPrompt, lastSize, generate, selectGeneration}}>
+        <ImageContext.Provider value={{imageUrl, loading, error, lastPrompt, lastSize, generate, sessionId, images, newSession, openSession}}>
             {children}
         </ImageContext.Provider>
     );

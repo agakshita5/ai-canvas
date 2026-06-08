@@ -12,11 +12,11 @@ interface PromptBarProps{
 }
 
 export default function PromptBar({variant = 'home'}:PromptBarProps){
-    const {generate, loading, imageUrl, lastPrompt, lastSize} = useImageGeneration();
+    const {generate, loading, imageUrl, lastPrompt, lastSize, sessionId} = useImageGeneration();
     const aspectRatioList = ["1:1", "3:4", "4:3", "9:16", "16:9"];
-    // user edits kept per chat (keyed by its image url), so switching history never mixes them
+    // user edits kept per chat (keyed by sessionId, not imageUrl which is '' for every new/empty chat)
     const [drafts, setDrafts] = useState<Record<string, string>>({});
-    const input = drafts[imageUrl] ?? lastPrompt; // this chat's edit if any, else its own prompt
+    const input = drafts[sessionId] ?? lastPrompt; // this chat's edit if any, else its own prompt
     const [size, setSize] = useState('');
     const router = useRouter();
 
@@ -74,7 +74,7 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                             value={input}
                             required
                             onChange={(e) => {
-                                setDrafts({...drafts, [imageUrl]: e.currentTarget.value});
+                                setDrafts({...drafts, [sessionId]: e.currentTarget.value});
                                 e.currentTarget.style.height = "auto";
                                 e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
                             }}
@@ -86,13 +86,13 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                                 <ChevronDownIcon aria-hidden="true" className="-mr-1 size-5 text-[#ededed]" />
                             </MenuButton>
 
-                            <MenuItems transition className={`absolute z-10 w-56 rounded-md ${variant==='canvas'? 'right-0 mb-2 origin-bottom-right bottom-full' : 'right-0 mt-2 origin-top-right'} max-h-64 overflow-y-auto bg-[#63768D] outline-1 -outline-offset-1 outline-white/10 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in`} >
+                            <MenuItems transition className={`absolute z-10 w-56 rounded-md ${variant==='canvas'? 'right-0 mb-2 origin-bottom-right bottom-full' : 'right-0 mt-2 origin-top-right'} max-h-64 overflow-y-auto bg-[#36213E] outline-1 -outline-offset-1 outline-white/10 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in`} >
                                 <div className="py-1">
                                     {
                                     aspectRatioList.map((element)=>{
                                         return (
                                             <MenuItem key={element}>
-                                                <a onClick={() => setSize(element)} href="#" className="block px-4 py-2 text-sm text-[#ededed] data-focus:bg-white/10 data-focus:outline-hidden" >
+                                                <a onClick={() => setSize(element)} href="#" className="block px-4 py-2 text-sm text-[#ededed] data-focus:bg-[#60517c65] data-focus:outline-hidden" >
                                                 {element}
                                                 </a>
                                             </MenuItem>
