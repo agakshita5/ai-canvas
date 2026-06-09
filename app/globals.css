@@ -3,25 +3,32 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --clerk-color-background: #212126;
-  --clerk-color-neutral: white;
-  --clerk-color-primary: #FFFFFF;
-  --clerk-color-primary-foreground: black;
-  --clerk-color-foreground: white;
-  --clerk-color-input-foreground: white;
-  --clerk-color-input: #26262B;
 }
 
-.dark {
-  --clerk-color-background: #27192e;
-  --clerk-color-neutral: #EDEDED;
-  --clerk-color-primary: #E5E5E5;
-  --clerk-color-primary-foreground: #2A1A30;
-  --clerk-color-foreground: #EDEDED;
-  --clerk-color-input-foreground: white;
-  --clerk-color-input: #321F38;
-  --clerk-color-muted: #291D2F;
-  --clerk-color-muted-foreground: #747686;
+.clerk-dark {
+  --clerk-color-background: #2a2521;
+  --clerk-color-neutral: #ece4d8;
+  --clerk-color-primary: #c75d3f;          
+  --clerk-color-primary-foreground: #fbf8f1;
+  --clerk-color-foreground: #ece4d8;
+  --clerk-color-input-foreground: #ece4d8;
+  --clerk-color-input: #221d19;
+  --clerk-color-muted: #241f1b;
+  --clerk-color-muted-foreground: #9a8f82;
+}
+/* Warm editorial studio (espresso) — the app's theme. Default on :root, pinned on /generate chrome. */
+:root,
+[data-theme="studio-dark"] {
+  --bg-canvas: #1f1b17;                  /* deep espresso work surface — images pop on it */
+  --bg-panel: #2a2521;                   /* warm ink panels (sidebar, prompt bar) */
+  --accent: #cf6f4e;                     /* terracotta accent */
+  --btn: #c75d3f;                        /* clay primary button */
+  --btn-hover: #a8472d;
+  --text: #ece4d8;                       /* warm cream text */
+  --btn-text: #fbf8f1;
+  --highlight: rgba(199, 93, 63, 0.16);  /* clay tint for selected/hover rows */
+  --border: rgba(236, 228, 216, 0.10);   /* soft warm border */
+  --dot: rgba(236, 228, 216, 0.10);      /* warm canvas dot grid */
 }
 
 @theme inline {
@@ -29,6 +36,16 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-canvas: var(--bg-canvas);
+  --color-panel: var(--bg-panel);
+  --color-accent: var(--accent);
+  --color-btn: var(--btn);
+  --color-btn-hover: var(--btn-hover);
+  --color-content: var(--text);
+  --color-btn-content: var(--btn-text);
+  --color-highlight: var(--highlight);
+  --color-edge: var(--border);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -42,5 +59,24 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(80px, -60px) scale(1.18); }
+  66%      { transform: translate(-60px, 45px) scale(0.88); }
+}
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-16px); }
+}
+
+.anim-drift      { animation: drift 18s ease-in-out infinite; }
+.anim-drift-slow { animation: drift 26s ease-in-out infinite; }
+.anim-float      { animation: floaty 6s ease-in-out infinite; }
+.anim-float-slow { animation: floaty 8s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-drift, .anim-drift-slow, .anim-float, .anim-float-slow { animation: none; }
 }
 

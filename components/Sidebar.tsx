@@ -61,19 +61,19 @@ function Sidebar() {
 
     return (
         <aside className="h-screen flex-shrink-0">
-            <div className={`flex h-full flex-col overflow-y-auto bg-[#36213E] pt-8 transition-all duration-300 ${isSidebarOpen ? "w-64" : "w-16"}`}>
+            <div className={`flex h-full flex-col overflow-y-auto bg-panel backdrop-blur-md pt-8 transition-all duration-300 ${isSidebarOpen ? "w-64" : "w-16"}`}>
                 <div className="flex px-4 items-center justify-between gap-2">
                     {isSidebarOpen &&
-                    (<h2 className="text-lg font-medium text-[#ededed] truncate">
+                    (<h2 className="text-lg font-medium text-content truncate">
                         Chats
                     </h2>)}
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="flex-shrink-0 p-1 hover:bg-white/10 rounded transition-colors"
+                        className="flex-shrink-0 p-1 hover:bg-highlight rounded transition-colors"
                     >
                         {/* got svg from opening .svg file in text editor */}
                         <svg
-                            className="h-5 w-5 text-[#ededed]"
+                            className="h-5 w-5 text-content"
                             viewBox="0 0 512 512"
                             fill="currentColor"
                         >
@@ -85,7 +85,7 @@ function Sidebar() {
                 </div>
                 {/* new chat btn */}
                 <div className="mx-2 mt-8">
-                    <button onClick={()=> newSession()} className="flex w-full gap-x-4 rounded-lg bg-[#89808d] p-4 items-center text-sm font-medium text-[#ededed] transition-colors duration-200 hover:bg-[#746c78] focus:outline-none">
+                    <button onClick={()=> newSession()} className="flex w-full gap-x-4 rounded-lg bg-btn p-4 items-center text-sm font-medium text-btn-content transition-colors duration-200 hover:bg-btn-hover focus:outline-none">
                         <svg className="h-6 w-6 flex-shrink-1" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M12 5l0 14"></path>
@@ -102,19 +102,19 @@ function Sidebar() {
                         <button
                             key={session.key}
                             onClick={() => openSession(session.key, session.images)}
-                            className={`flex flex-col w-full px-3 py-2 hover:bg-[#60517c65] rounded transition-colors ${isSidebarOpen && session.key === sessionId ? "bg-[#60517c65]" : ""}`} // highlight session being viewed
+                            className={`flex flex-col w-full px-3 py-2 hover:bg-highlight rounded transition-colors ${isSidebarOpen && session.key === sessionId ? "bg-highlight" : ""}`} // highlight session being viewed
                         >
                             {isSidebarOpen && (
                                 <>
-                                    <h1 className="text-left text-sm text-[#ededed]">{session.title}</h1>
-                                    <p className="text-left text-xs text-[#ededed]/70">{new Date(session.latest).toLocaleDateString()}</p>
+                                    <h1 className="text-left text-sm text-content">{session.title}</h1>
+                                    <p className="text-left text-xs text-content/70">{new Date(session.latest).toLocaleDateString()}</p>
                                 </>
                             )}
                         </button>
                     ))}
                 </div>
 
-                <div className="w-full space-y-2 px-2 py-4 border-t border-white/20">
+                <div className="w-full space-y-2 px-2 py-4 border-t border-edge">
                     <UserButton />
                 </div>
             </div>

@@ -7,7 +7,7 @@ import PromptBar from "@/components/PromptBar";
 export default function Canvas() {
 
   return (
-    <div className="flex h-screen bg-[#554971]">
+    <div data-theme="studio-dark" className="flex h-screen bg-canvas">
         <Sidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
             <ImagePreview />
