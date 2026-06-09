@@ -32,6 +32,13 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
     const [sessionId, setSessionId] = useState(() => crypto.randomUUID());
     const images = sessions[sessionId] ?? [];
 
+    function persistSession(id: string) {
+        if (typeof window !== 'undefined') localStorage.setItem('last-session', id);
+    }
+    function clearPersistedSession() {
+        if (typeof window !== 'undefined') localStorage.removeItem('last-session');
+    }
+
     function addImage(img: CanvasImage) {
         setSessions(prev => {
             const current = prev[sessionId] ?? [];
@@ -62,6 +69,7 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
                 setLastPrompt(prompt);
                 setLastSize(size);
                 addImage({id: data.id, url: data.imageUrl, prompt, aspectRatio: data.aspectRatio ?? size});
+                persistSession(sessionId); 
                 window.dispatchEvent(new Event('generation-created'));
                 return true;
             }else{
@@ -82,12 +90,14 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
         setLastPrompt('');
         setLastSize('');
         setError('');
+        clearPersistedSession(); 
     }
-
+    
     // open an existing chat 
     function openSession(id: string, imgs: CanvasImage[]) {
         setSessions(prev => ({...prev, [id]: imgs}));
         setSessionId(id);
+        persistSession(id);
         const last = imgs[imgs.length - 1]; 
         setImageUrl(last?.url ?? '');
         setLastPrompt(last?.prompt ?? '');

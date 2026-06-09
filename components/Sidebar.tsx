@@ -1,7 +1,7 @@
 'use client';
 
 import { UserButton } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useImageGeneration, type CanvasImage } from "@/providers/image-generation-provider";
 
 type Generation = {
@@ -45,19 +45,30 @@ function Sidebar() {
     }, []);
 
     // group flat history into one entry per chat session
-    const sessionsMap = new Map<string, Session>();
-    for (const g of history) {                       
-        const key = g.session_id ?? g.id;           
-        const img: CanvasImage = {id: g.id, url: g.image_url, prompt: g.prompt, aspectRatio: g.aspect_ratio ?? ''};
-        const existing = sessionsMap.get(key);
-        if (existing) {
-            existing.images.unshift(img);           
-            existing.title = g.prompt;
-        } else {
-            sessionsMap.set(key, {key, title: g.prompt, images: [img], latest: g.created_at});
+    const sessions = useMemo(() => {
+        const sessionsMap = new Map<string, Session>();
+        for (const g of history) {
+            const key = g.session_id ?? g.id;
+            const img: CanvasImage = {id: g.id, url: g.image_url, prompt: g.prompt, aspectRatio: g.aspect_ratio ?? ''};
+            const existing = sessionsMap.get(key);
+            if (existing) {
+                existing.images.unshift(img);
+                existing.title = g.prompt;
+            } else {
+                sessionsMap.set(key, {key, title: g.prompt, images: [img], latest: g.created_at});
+            }
         }
-    }
-    const sessions = [...sessionsMap.values()].sort((a, b) => b.latest.localeCompare(a.latest));
+        return [...sessionsMap.values()].sort((a, b) => b.latest.localeCompare(a.latest));
+    }, [history]);
+
+    const restored = useRef(false);
+    useEffect(() => {
+        if (restored.current || sessions.length === 0) return;
+        restored.current = true;
+        const last = localStorage.getItem('last-session');
+        const session = last && sessions.find(s => s.key === last);
+        if (session) openSession(session.key, session.images);
+    }, [sessions, openSession]);
 
     return (
         <aside className="h-screen flex-shrink-0">
