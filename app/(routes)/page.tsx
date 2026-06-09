@@ -89,12 +89,12 @@ export default function AICanvasLanding() {
         <div className="relative mx-auto h-[28rem] w-full max-w-md">
           <div className="anim-float-slow absolute right-2 top-10">
             <div className="rotate-[5deg] rounded-[1.25rem] shadow-[0_25px_50px_-15px_rgba(70,45,30,0.45)]">
-              <img src="/background-img-2.jpg" alt="" className="h-64 w-52 rounded-[0.75rem] object-cover" />
+              <img src="/card2.png" alt="" className="h-64 w-52 rounded-[0.75rem] object-cover" />
             </div>
           </div>
           <div className="anim-float absolute left-0 top-0" style={{ animationDelay: '-2.5s' }}>
             <div className="-rotate-[4deg] rounded-[1.25rem] shadow-[0_30px_60px_-18px_rgba(70,45,30,0.5)]">
-              <img src="/landing-bg.png" alt="AI generated preview" className="h-72 w-56 rounded-[0.75rem] object-cover" />
+              <img src="/card1.png" alt="AI generated preview" className="h-72 w-56 rounded-[0.75rem] object-cover" />
             </div>
           </div>
         </div>
