@@ -54,7 +54,7 @@ export default function AICanvasLanding() {
           <a href="#techstack" className="transition hover:text-[var(--ink)]">Tech Stack</a>
           <a href="https://github.com/agakshita5/ai-canvas" className="transition hover:text-[var(--ink)]">GitHub</a>
         </div>
-        <a href="/generate" className="group inline-flex items-center gap-1.5 rounded-full bg-[var(--ink)] px-5 py-2 text-sm font-medium text-[var(--paper-2)] transition hover:bg-[var(--clay)]">
+        <a href="/generate" className="group inline-flex items-center gap-1.5 rounded-full bg-[var(--ink)] px-4 py-2 font-medium text-[var(--paper-2)] transition hover:bg-[var(--clay)]">
           Open Canvas
           <ArrowUpRight size={15} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </a>
@@ -75,11 +75,11 @@ export default function AICanvasLanding() {
             Describe a vision and let AI compose it, then refine and arrange every piece on an endless canvas — a calm, tactile studio for making images.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-4">
-            <a href="/generate" className="group inline-flex items-center gap-2 rounded-full bg-[var(--clay)] px-7 py-3.5 font-medium text-[var(--paper-2)] shadow-[0_10px_30px_-10px_rgba(167,71,45,0.6)] transition hover:-translate-y-0.5 hover:bg-[var(--clay-deep)]">
+            <a href="/generate" className="group inline-flex items-center gap-2 rounded-full bg-[var(--clay)] px-4.5 py-2.5 font-medium text-[var(--paper-2)] shadow-[0_10px_30px_-10px_rgba(167,71,45,0.6)] transition hover:-translate-y-0.5 hover:bg-[var(--clay-deep)]">
               Try the Canvas
               <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
             </a>
-            <a href="https://github.com/agakshita5/ai-canvas" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] px-7 py-3.5 font-medium text-[var(--ink)] transition hover:-translate-y-0.5 hover:border-[var(--ink)]">
+            <a href="https://github.com/agakshita5/ai-canvas" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] px-4.5 py-2.5 font-medium text-[var(--ink)] transition hover:-translate-y-0.5 hover:border-[var(--ink)]">
               View on GitHub
             </a>
           </div>
@@ -156,7 +156,7 @@ export default function AICanvasLanding() {
           <div className="relative">
             <D as="h2" className="text-4xl font-semibold text-[var(--paper-2)] md:text-5xl">Ready to <D as="span" italic className="text-[var(--clay)]">create</D>?</D>
             <p className="mx-auto mt-5 max-w-md text-[var(--paper)]/70">Start making AI-powered images now. No credit card required.</p>
-            <a href="/generate" className="group mt-9 inline-flex items-center gap-2 rounded-full bg-[var(--paper-2)] px-8 py-4 font-medium text-[var(--ink)] transition hover:-translate-y-0.5 hover:bg-[var(--clay)] hover:text-[var(--paper-2)]">
+            <a href="/generate" className="group mt-9 inline-flex items-center gap-2 rounded-full bg-[var(--paper-2)] px-5 py-2.5  font-medium text-[var(--ink)] transition hover:-translate-y-0.5 hover:bg-[var(--clay)] hover:text-[var(--paper-2)]">
               Launch Live Demo
               <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
             </a>
