@@ -83,6 +83,7 @@ export default function ImagePreview(){
                         nodeTypes={nodeTypes}
                         onSelectionChange={onSelectionChange}
                         onInit={(instance) => {flowRef.current = instance}}
+                        proOptions={{hideAttribution: true}}
                         fitView
                     >
                         <Background variant={BackgroundVariant.Dots} gap={24} size={1.5} color="var(--dot)" bgColor="var(--bg-canvas)" />
