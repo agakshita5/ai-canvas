@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Fraunces } from 'next/font/google';
-import { ArrowRight, ArrowUpRight, Asterisk, Zap, Cloud, Database, Lock } from 'lucide-react';
+import { ArrowRightIcon, AsteriskIcon, LightningIcon, CloudIcon, DatabaseIcon, LockIcon, ArrowUpRightIcon } from '@phosphor-icons/react';
 
 const display = Fraunces({ subsets: ['latin'], weight: ['400', '500', '600', '700'], style: ['normal', 'italic'] });
 
@@ -19,10 +19,10 @@ const palette = {
 } as React.CSSProperties;
 
 const FEATURES = [
-  { icon: Zap, title: 'AI Image Generation', desc: 'Turn a sentence into a finished image with Google Vertex AI.' },
-  { icon: Cloud, title: 'Cloud Storage', desc: 'Every piece you make is kept safe on Supabase Storage.' },
-  { icon: Database, title: 'Database Integration', desc: 'Supabase PostgreSQL remembers every generation and session.' },
-  { icon: Lock, title: 'Secure Authentication', desc: 'Clerk keeps your studio private, per-account.' },
+  { icon: LightningIcon, title: 'AI Image Generation', desc: 'Turn a sentence into a finished image with Google Vertex AI.' },
+  { icon: CloudIcon, title: 'Cloud Storage', desc: 'Every piece you make is kept safe on Supabase Storage.' },
+  { icon: DatabaseIcon, title: 'Database Integration', desc: 'Supabase PostgreSQL remembers every generation and session.' },
+  { icon: LockIcon, title: 'Secure Authentication', desc: 'Clerk keeps your studio private, per-account.' },
 ];
 
 const STACK = [
@@ -56,7 +56,7 @@ export default function AICanvasLanding() {
         </div>
         <a href="/generate" className="group inline-flex items-center gap-1.5 rounded-full bg-[var(--ink)] px-4 py-2 font-medium text-[var(--paper-2)] transition hover:bg-[var(--clay)]">
           Open Canvas
-          <ArrowUpRight size={15} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          <ArrowUpRightIcon size={15} weight="bold" className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </a>
       </nav>
 
@@ -64,7 +64,7 @@ export default function AICanvasLanding() {
       <section className="relative z-10 mx-auto grid max-w-6xl items-center gap-14 px-6 pt-16 pb-24 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
           <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-[var(--muted)]">
-            <Asterisk size={15} className="text-[var(--clay)]" /> Powered by Google Vertex AI
+            <AsteriskIcon size={15} weight="bold" className="text-[var(--clay)]" /> Powered by Google Vertex AI
           </span>
           <D as="h1" className="mt-6 text-5xl font-semibold leading-[1.02] tracking-tight md:text-[4.5rem]">
             Where ideas
@@ -77,7 +77,7 @@ export default function AICanvasLanding() {
           <div className="mt-9 flex flex-wrap items-center gap-4">
             <a href="/generate" className="group inline-flex items-center gap-2 rounded-full bg-[var(--clay)] px-4.5 py-2.5 font-medium text-[var(--paper-2)] shadow-[0_10px_30px_-10px_rgba(167,71,45,0.6)] transition hover:-translate-y-0.5 hover:bg-[var(--clay-deep)]">
               Try the Canvas
-              <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+              <ArrowUpRightIcon size={18} weight="bold" className="transition-transform group-hover:translate-x-1" />
             </a>
             <a href="https://github.com/agakshita5/ai-canvas" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] px-4.5 py-2.5 font-medium text-[var(--ink)] transition hover:-translate-y-0.5 hover:border-[var(--ink)]">
               View on GitHub
@@ -110,13 +110,13 @@ export default function AICanvasLanding() {
               AICANVAS combines generative models, a cloud database, signed-URL storage and an infinite canvas into one production-ready application.
             </p>
             <a href="/generate" className="mt-8 inline-flex items-center gap-2 font-medium text-[var(--clay)] transition hover:gap-3">
-              Launch the canvas <ArrowRight size={18} />
+              Launch the canvas <ArrowUpRightIcon size={18} weight="bold" />
             </a>
           </div>
           <ul>
             {FEATURES.map(({ icon: Icon, title, desc }, i) => (
               <li key={title} className="group grid grid-cols-[auto_auto_1fr] items-start gap-5 border-t border-[var(--line)] py-6 transition last:border-b">
-                <span className="mt-1 text-[var(--sage)] transition group-hover:text-[var(--clay)]"><Icon size={20} /></span>
+                <span className="mt-1 text-[var(--sage)] transition group-hover:text-[var(--clay)]"><Icon size={22} weight="duotone" /></span>
                 <div>
                   <h3 className="font-semibold">{title}</h3>
                   <p className="mt-1 text-sm leading-relaxed text-[var(--muted)]">{desc}</p>
@@ -158,7 +158,7 @@ export default function AICanvasLanding() {
             <p className="mx-auto mt-5 max-w-md text-[var(--paper)]/70">Start making AI-powered images now. No credit card required.</p>
             <a href="/generate" className="group mt-9 inline-flex items-center gap-2 rounded-full bg-[var(--paper-2)] px-5 py-2.5  font-medium text-[var(--ink)] transition hover:-translate-y-0.5 hover:bg-[var(--clay)] hover:text-[var(--paper-2)]">
               Launch Live Demo
-              <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+              <ArrowRightIcon size={18} weight="bold" className="transition-transform group-hover:translate-x-1" />
             </a>
           </div>
         </div>

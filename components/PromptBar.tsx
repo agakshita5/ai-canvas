@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { CaretDownIcon, MicrophoneIcon, PaperPlaneTiltIcon, CircleNotchIcon } from '@phosphor-icons/react'
 import {useImageGeneration} from '@/providers/image-generation-provider';
 
 interface PromptBarProps{
@@ -45,25 +45,7 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                     <div className="flex w-full max-w-3xl items-center gap-2 rounded-xl bg-panel backdrop-blur-md p-2 shadow-md">
                         {/* voice input button */}
                         <button type="button" className="p-2 text-content hover:text-content/50" >
-                            <svg
-                                aria-hidden="true"
-                                className="h-5 w-5"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                                strokeWidth="2"
-                                stroke="currentColor"
-                                fill="none"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path
-                                d="M9 2m0 3a3 3 0 0 1 3 -3h0a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3h0a3 3 0 0 1 -3 -3z"
-                                ></path>
-                                <path d="M5 10a7 7 0 0 0 14 0"></path>
-                                <path d="M8 21l8 0"></path>
-                                <path d="M12 17l0 4"></path>
-                            </svg>
+                            <MicrophoneIcon size={20} weight="duotone" />
                             <span className="sr-only">Use voice input</span>
                         </button>
                         <textarea
@@ -81,9 +63,9 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                         ></textarea>
                         {/* size/aspect-ratio dropdown */}
                         <Menu as="div" className="relative">
-                            <MenuButton className="inline-flex w-fit rounded-md px-2 py-1 text-sm font-semibold text-content hover:bg-highlight ">
+                            <MenuButton className="inline-flex w-fit rounded-md px-2 py-1 text-sm font-semibold text-content text-center hover:bg-highlight gap-1">
                                 {size || lastSize || "Size"}
-                                <ChevronDownIcon aria-hidden="true" className="-mr-1 size-5 text-content" />
+                                <CaretDownIcon aria-hidden="true" className="-mr-1 size-4 text-content" />
                             </MenuButton>
 
                             <MenuItems transition className={`absolute z-10 w-56 rounded-md ${variant==='canvas'? 'right-0 mb-2 origin-bottom-right bottom-full' : 'right-0 mt-2 origin-top-right'} max-h-64 overflow-y-auto bg-panel outline-1 -outline-offset-1 outline-edge transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in`} >
@@ -104,44 +86,9 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                         </Menu> 
                         {/* generate button */}
                         <button type="submit" disabled={loading} className="rounded-lg p-2 text-sm font-medium text-btn-content bg-btn hover:bg-btn-hover sm:text-base" >
-                            {loading ? 
-                            (<svg
-                                className="h-6 w-6 animate-spin"
-                                viewBox="0 0 24 24"
-                            >
-                            <circle
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                className="opacity-25"
-                                fill="none"
-                            />
-                            <path
-                                d="M22 12a10 10 0 0 1-10 10"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                className="opacity-75"
-                                fill="none"
-                            />
-                            </svg>)
-                            : 
-                            (<svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-6 w-6"
-                                aria-hidden="true"
-                                viewBox="0 0 24 24"
-                                strokeWidth="2"
-                                stroke="currentColor"
-                                fill="none"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M10 14l11 -11"></path>
-                                <path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5" ></path>
-                            </svg>)
+                            {loading
+                                ? <CircleNotchIcon size={24} weight="bold" className="animate-spin" />
+                                : <PaperPlaneTiltIcon size={24} weight="fill" />
                             }
                             <span className="sr-only">Send message</span>
                         </button>
