@@ -13,7 +13,7 @@ interface ImageContextType{
     lastSize: string;
     lastPrompt: string;
     generate: (prompt: string, size: string) => Promise<boolean>;
-    editImage: (sourceUrl: string, instruction: string) => Promise<boolean>;
+    editImage: (imageUrl: string, instruction: string) => Promise<boolean>;
     sessionId: string;
     images: CanvasImage[];
     newSession: () => void;
@@ -47,8 +47,7 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
         });
     }
 
-    async function editImage(sourceUrl: string, instruction: string){
-        setLoading(true);
+    async function editImage(imageUrl: string, instruction: string){
         setError('');
         
         try{
@@ -57,7 +56,7 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({sourceUrl, instruction, sessionId}), 
+                body: JSON.stringify({imageUrl, instruction, sessionId}), 
             });
 
             const data = await res.json();
@@ -79,8 +78,6 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
         }catch(error){
             setError(error instanceof Error ? error.message : "Something went wrong");
             return false;
-        }finally{
-            setLoading(false);
         }
         return false;
     }
@@ -145,7 +142,7 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
     }
 
     return (
-        <ImageContext.Provider value={{imageUrl, loading, error, lastPrompt, lastSize, generate, sessionId, images, newSession, openSession}}>
+        <ImageContext.Provider value={{imageUrl, loading, error, lastPrompt, lastSize, generate, editImage, sessionId, images, newSession, openSession}}>
             {children}
         </ImageContext.Provider>
     );

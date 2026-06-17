@@ -29,8 +29,8 @@ export async function POST(req: Request) {
       console.warn('[chat] missing sessionId from client, generating server-side fallback');
       resolvedSessionId = crypto.randomUUID();
     }
-
-    if (!instruction?.trim()) {
+    
+    if (!instruction?.trim() || !imageUrl?.trim()) {
       return NextResponse.json(
         { success: false, error: 'invalid request parameters' },
         { status: 400 },
@@ -48,7 +48,10 @@ export async function POST(req: Request) {
     await upsertUserFromClerk(user);
 
     // fetch source bytes
-    const buf = Buffer.from(await (await fetch(imageUrl)).arrayBuffer())
+    const resp = await fetch(imageUrl);
+    if (!resp.ok) throw new Error('source image fetch failed');
+
+    const buf = Buffer.from(await resp.arrayBuffer())
 
     // edit image 
     const result = await generateText({
@@ -65,8 +68,8 @@ export async function POST(req: Request) {
 
     if (!result.files) throw new Error('image generation failed');
     
-    const file = result.files.find(f => f.mediaType?.startsWith('image/'));
-    console.log(`result.files: ${result.files}`);
+    const file = result.files?.find(f => f.mediaType?.startsWith('image/'));
+    if (!file?.base64) throw new Error('no image returned from model'); 
 
     // upload generated image to supabase
     const uploadedImage = await uploadGeneratedImage(file.base64, user.id);
