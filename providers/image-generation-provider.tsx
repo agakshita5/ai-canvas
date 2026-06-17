@@ -13,6 +13,7 @@ interface ImageContextType{
     lastSize: string;
     lastPrompt: string;
     generate: (prompt: string, size: string) => Promise<boolean>;
+    editImage: (sourceUrl: string, instruction: string) => Promise<boolean>;
     sessionId: string;
     images: CanvasImage[];
     newSession: () => void;
@@ -44,6 +45,44 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
             const current = prev[sessionId] ?? [];
             return current.some(i => i.id === img.id) ? prev : {...prev, [sessionId]: [...current, img]};
         });
+    }
+
+    async function editImage(sourceUrl: string, instruction: string){
+        setLoading(true);
+        setError('');
+        
+        try{
+            const res = await fetch("/api/edit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({sourceUrl, instruction, sessionId}), 
+            });
+
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.error || `Server error: ${res.status}`);
+            }
+            if(data.success){
+                console.log('api returned:', data.imageUrl);
+                setImageUrl(data.imageUrl);
+                setLastPrompt(instruction);
+                setLastSize(data.aspectRatio);
+                addImage({id: data.id, url: data.imageUrl, prompt: instruction, aspectRatio: data.aspectRatio});
+                persistSession(sessionId); 
+                window.dispatchEvent(new Event('generation-created'));
+                return true;
+            }else{
+                console.log('error while generating: ',data.error);
+            }
+        }catch(error){
+            setError(error instanceof Error ? error.message : "Something went wrong");
+            return false;
+        }finally{
+            setLoading(false);
+        }
+        return false;
     }
 
     async function generate(prompt: string, size: string) {
