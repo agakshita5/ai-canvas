@@ -5,18 +5,11 @@ import { getCurrentUser } from '@/lib/clerk';
 import { createGeneration } from '@/lib/db/generations';
 import { upsertUserFromClerk } from '@/lib/db/users';
 import { uploadGeneratedImage } from '@/lib/db/storage';
-import fs from 'fs';
+import setupGoogleCredentials from '@/lib/google';
 
 const defaultAspectRatio = '1:1';
 
-function setupGoogleCredentials() {
-  if (process.env.GOOGLE_APPLICATION_CREDENTIALS) return;
-  if (!process.env.GOOGLE_CREDENTIALS_JSON) throw new Error('Missing Google credentials');
-  
-  const credentialsPath = '/tmp/google-credentials.json';
-  fs.writeFileSync(credentialsPath, process.env.GOOGLE_CREDENTIALS_JSON);
-  process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath;
-}
+setupGoogleCredentials();
 
 export async function POST(req: Request) {
   const requestId = Math.random().toString(36).slice(2);
