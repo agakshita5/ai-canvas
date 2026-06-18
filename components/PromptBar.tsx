@@ -1,7 +1,7 @@
 // prompt
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { CaretDownIcon, MicrophoneIcon, PaperPlaneTiltIcon, CircleNotchIcon } from '@phosphor-icons/react'
@@ -11,6 +11,19 @@ interface PromptBarProps{
     variant: 'home' | 'canvas';
 }
 
+type MicRecognition = {
+    lang: string;
+    interimResults: boolean;
+    continuous: boolean;
+    start: () => void;
+    stop: () => void;
+    onstart: (() => void) | null;
+    onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+    onend: (() => void) | null;
+    onerror: ((e: { error: string }) => void) | null;
+};
+type MicRecognitionCtor = new () => MicRecognition;
+
 export default function PromptBar({variant = 'home'}:PromptBarProps){
     const {generate, loading, imageUrl, lastPrompt, lastSize, sessionId} = useImageGeneration();
     const aspectRatioList = ["1:1", "3:4", "4:3", "9:16", "16:9"];
@@ -18,7 +31,51 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
     const [drafts, setDrafts] = useState<Record<string, string>>({});
     const input = drafts[sessionId] ?? lastPrompt; // this chat's edit if any, else its own prompt
     const [size, setSize] = useState('');
+    const [listening, setListening] = useState(false);
+    const [micNote, setMicNote] = useState(''); 
+    const recognitionRef = useRef<MicRecognition | null>(null);
     const router = useRouter();
+
+    useEffect(() => () => recognitionRef.current?.stop(), []);
+
+    function toggleMic() {
+        if (listening) { recognitionRef.current?.stop(); return; }
+        const w = window as unknown as { SpeechRecognition?: MicRecognitionCtor; webkitSpeechRecognition?: MicRecognitionCtor };
+        const Recognition = w.SpeechRecognition ?? w.webkitSpeechRecognition;
+        if (!Recognition) { setMicNote("Voice input isn't supported in this browser"); return; }
+        setMicNote('');
+        const recognition = new Recognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false; // one final result → append once (no duplicates)
+        recognition.continuous = false;
+        recognition.onstart = () => setListening(true); // only "on" once it really starts
+        recognition.onresult = (e) => {
+            const transcript = e.results[0]?.[0]?.transcript ?? '';
+            if (transcript) setDrafts(prev => ({...prev, [sessionId]: `${(prev[sessionId] ?? lastPrompt) || ''} ${transcript}`.trim()}));
+        };
+        recognition.onend = () => setListening(false);
+        recognition.onerror = (e) => {
+            // surface the reason instead of failing silently
+            const reason = e.error === 'not-allowed' || e.error === 'service-not-allowed'
+                ? 'Microphone blocked — allow mic access for this site (and check OS privacy settings).'
+                : e.error === 'audio-capture'
+                    ? 'No microphone found / OS is blocking it.'
+                    : e.error === 'network'
+                        ? 'Speech service unreachable (needs internet; use https or localhost).'
+                        : e.error === 'no-speech'
+                            ? "Didn't catch any speech — try again."
+                            : `Voice input error: ${e.error}`;
+            setMicNote(reason);
+            setListening(false);
+        };
+        recognitionRef.current = recognition;
+        try {
+            recognition.start();
+        } catch {
+            setMicNote('Could not start voice input.');
+            setListening(false);
+        }
+    }
 
     // SubmitEvent: browser/DOM type; React expects react form event
     // async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) { OR
@@ -44,8 +101,9 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                     <label htmlFor="chat-input" className="sr-only">Enter your idea & image resolution</label>
                     <div className="flex w-full max-w-3xl items-center gap-2 rounded-xl bg-panel backdrop-blur-md p-2 shadow-md">
                         {/* voice input button */}
-                        <button type="button" className="p-2 text-content hover:text-content/50" >
-                            <MicrophoneIcon size={20} weight="duotone" />
+                        <button type="button" onClick={toggleMic} title={listening ? "Stop voice input" : "Use voice input"}
+                            className={`p-2 transition ${listening ? 'text-accent animate-pulse' : 'text-content hover:text-content/50'}`} >
+                            <MicrophoneIcon size={20} weight={listening ? 'fill' : 'duotone'} />
                             <span className="sr-only">Use voice input</span>
                         </button>
                         <textarea
@@ -94,6 +152,7 @@ export default function PromptBar({variant = 'home'}:PromptBarProps){
                         </button>
                     </div>
                 </form>
+                {micNote && <p className="text-xs text-content/60">{micNote}</p>}
             </div>
         </div>
     );
