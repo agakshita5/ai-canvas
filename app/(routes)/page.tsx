@@ -48,9 +48,7 @@ export default function AICanvasLanding() {
   return (
     <div style={palette} className="relative min-h-screen overflow-hidden bg-[var(--paper)] text-[var(--ink)] selection:bg-[var(--clay)]/20">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        {/* static warm gradient mesh — depth/colour without motion */}
         <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(at 18% 18%, rgba(199,93,63,0.10) 0px, transparent 45%), radial-gradient(at 82% 12%, rgba(95,107,79,0.09) 0px, transparent 45%), radial-gradient(at 75% 85%, rgba(199,93,63,0.07) 0px, transparent 50%), radial-gradient(at 10% 80%, rgba(95,107,79,0.06) 0px, transparent 45%)' }} />
-        {/* drifting light blobs (animated) */}
         <div className="anim-drift absolute -top-40 -right-32 h-[36rem] w-[36rem] rounded-full bg-[var(--clay)]/15 blur-[120px]" />
         <div className="anim-drift-slow absolute top-1/3 -left-40 h-[32rem] w-[32rem] rounded-full bg-[var(--sage)]/15 blur-[120px]" style={{ animationDelay: '-9s' }} />
         <div className="anim-drift absolute -bottom-32 right-1/4 h-[28rem] w-[28rem] rounded-full bg-[var(--clay)]/10 blur-[120px]" style={{ animationDelay: '-15s' }} />
