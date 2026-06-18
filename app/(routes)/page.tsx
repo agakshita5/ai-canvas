@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Fraunces } from 'next/font/google';
-import { ArrowRightIcon, AsteriskIcon, LightningIcon, CloudIcon, DatabaseIcon, LockIcon, ArrowUpRightIcon } from '@phosphor-icons/react';
+import { ArrowRightIcon, AsteriskIcon, LightningIcon, SquaresFourIcon, PaintBrushHouseholdIcon, ResizeIcon, MicrophoneIcon, ShieldCheckIcon, ArrowUpRightIcon } from '@phosphor-icons/react';
 
 const display = Fraunces({ subsets: ['latin'], weight: ['400', '500', '600', '700'], style: ['normal', 'italic'] });
 
@@ -19,16 +19,24 @@ const palette = {
 } as React.CSSProperties;
 
 const FEATURES = [
-  { icon: LightningIcon, title: 'AI Image Generation', desc: 'Turn a sentence into a finished image with Google Vertex AI.' },
-  { icon: CloudIcon, title: 'Cloud Storage', desc: 'Every piece you make is kept safe on Supabase Storage.' },
-  { icon: DatabaseIcon, title: 'Database Integration', desc: 'Supabase PostgreSQL remembers every generation and session.' },
-  { icon: LockIcon, title: 'Secure Authentication', desc: 'Clerk keeps your studio private, per-account.' },
+  { icon: LightningIcon, title: 'AI Image Generation', desc: 'Turn a sentence into a finished image with Google Vertex AI (Imagen 3).' },
+  { icon: SquaresFourIcon, title: 'Infinite Canvas', desc: 'Arrange, drag, zoom and pan your images on an endless React Flow canvas.' },
+  { icon: PaintBrushHouseholdIcon, title: 'AI Editing', desc: 'Edit any image with a prompt — or a reference image — using Gemini 2.5 Flash Image.' },
+  { icon: ResizeIcon, title: 'Smart Resize', desc: 'Expand any image with AI outpainting that keeps the subject intact.' },
+  { icon: MicrophoneIcon, title: 'Voice Prompts', desc: 'Dictate your idea hands-free with built-in speech-to-text.' },
+  { icon: ShieldCheckIcon, title: 'Secure & Saved', desc: 'Clerk auth, Supabase storage.' },
 ];
 
 const STACK = [
-  { title: 'Frontend', items: ['Next.js 16', 'React 19', 'TypeScript', 'Tailwind CSS 4'] },
-  { title: 'AI & Backend', items: ['Google Vertex AI', 'Vercel AI SDK', 'Next.js API Routes', 'React Flow Canvas'] },
+  { title: 'Frontend', items: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'React Flow'] },
+  { title: 'AI & Backend', items: ['Vertex AI', 'Vercel AI SDK', 'Next.js API Routes'] },
   { title: 'Infrastructure', items: ['Supabase (PostgreSQL)', 'Supabase Storage', 'Clerk Authentication', 'Google Cloud'] },
+];
+
+const STEPS = [
+  { n: '01', title: 'Describe it', desc: 'Type your idea, or dictate it hands-free with built-in voice input.' },
+  { n: '02', title: 'Generate with AI', desc: 'Imagen 3 turns your prompt into a finished image, right on your canvas.' },
+  { n: '03', title: 'Edit, expand & arrange', desc: 'Refine with Gemini, outpaint to any ratio, and lay everything out freely.' },
 ];
 
 // serif display helper
@@ -40,6 +48,9 @@ export default function AICanvasLanding() {
   return (
     <div style={palette} className="relative min-h-screen overflow-hidden bg-[var(--paper)] text-[var(--ink)] selection:bg-[var(--clay)]/20">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        {/* static warm gradient mesh — depth/colour without motion */}
+        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(at 18% 18%, rgba(199,93,63,0.10) 0px, transparent 45%), radial-gradient(at 82% 12%, rgba(95,107,79,0.09) 0px, transparent 45%), radial-gradient(at 75% 85%, rgba(199,93,63,0.07) 0px, transparent 50%), radial-gradient(at 10% 80%, rgba(95,107,79,0.06) 0px, transparent 45%)' }} />
+        {/* drifting light blobs (animated) */}
         <div className="anim-drift absolute -top-40 -right-32 h-[36rem] w-[36rem] rounded-full bg-[var(--clay)]/15 blur-[120px]" />
         <div className="anim-drift-slow absolute top-1/3 -left-40 h-[32rem] w-[32rem] rounded-full bg-[var(--sage)]/15 blur-[120px]" style={{ animationDelay: '-9s' }} />
         <div className="anim-drift absolute -bottom-32 right-1/4 h-[28rem] w-[28rem] rounded-full bg-[var(--clay)]/10 blur-[120px]" style={{ animationDelay: '-15s' }} />
@@ -61,7 +72,7 @@ export default function AICanvasLanding() {
       </nav>
 
       {/* Hero */}
-      <section className="relative z-10 mx-auto grid max-w-6xl items-center gap-14 px-6 pt-16 pb-24 lg:grid-cols-[1.05fr_0.95fr]">
+      <section className="relative z-10 mx-auto grid max-w-6xl items-center gap-14 px-6 pt-16 pb-16 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
           <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-[var(--muted)]">
             <AsteriskIcon size={15} weight="bold" className="text-[var(--clay)]" /> Powered by Google Vertex AI
@@ -72,7 +83,7 @@ export default function AICanvasLanding() {
             become <D as="span" italic className="text-[var(--clay)]">images</D>.
           </D>
           <p className="mt-7 max-w-md text-lg leading-relaxed text-[var(--muted)]">
-            Describe a vision and let AI compose it, then refine and arrange every piece on an endless canvas — a calm, tactile studio for making images.
+            Describe a vision and let AI compose it. Then edit, expand, and arrange every piece on an endless canvas. A calm, tactile studio for making images.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-4">
             <a href="/generate" className="group inline-flex items-center gap-2 rounded-full bg-[var(--clay)] px-4.5 py-2.5 font-medium text-[var(--paper-2)] shadow-[0_10px_30px_-10px_rgba(167,71,45,0.6)] transition hover:-translate-y-0.5 hover:bg-[var(--clay-deep)]">
@@ -89,48 +100,65 @@ export default function AICanvasLanding() {
         <div className="relative mx-auto h-[28rem] w-full max-w-md">
           <div className="anim-float-slow absolute right-2 top-10">
             <div className="rotate-[5deg] rounded-[1.25rem] shadow-[0_25px_50px_-15px_rgba(70,45,30,0.45)]">
-              <img src="/card2.png" alt="" className="h-64 w-52 rounded-[0.75rem] object-cover" />
+              <img src="/raccoon-sw.png" alt="" className="h-64 w-52 rounded-[0.75rem] object-cover" />
             </div>
           </div>
           <div className="anim-float absolute left-0 top-0" style={{ animationDelay: '-2.5s' }}>
             <div className="-rotate-[4deg] rounded-[1.25rem] shadow-[0_30px_60px_-18px_rgba(70,45,30,0.5)]">
-              <img src="/card1.png" alt="AI generated preview" className="h-72 w-56 rounded-[0.75rem] object-cover" />
+              <img src="/scenery.png" alt="AI generated preview" className="h-72 w-56 rounded-[0.75rem] object-cover" />
             </div>
           </div>
         </div>
       </section>
 
       {/* About section */}
-      <section id="about" className="relative z-10 mx-auto max-w-6xl px-6 py-20">
+      <section id="about" className="relative z-10 mx-auto max-w-6xl px-6 py-16">
         <div className="grid gap-14 md:grid-cols-[0.8fr_1.2fr]">
           <div>
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-[var(--clay)]">What I Built</p>
             <D as="h2" className="mt-4 text-4xl font-semibold leading-tight md:text-5xl">A full studio, <D as="span" italic>not just</D> a generator.</D>
             <p className="mt-6 max-w-sm leading-relaxed text-[var(--muted)]">
-              AICANVAS combines generative models, a cloud database, signed-URL storage and an infinite canvas into one production-ready application.
+              AICANVAS combines image generation (Imagen 3), prompt-based editing and outpainting (Gemini 2.5 Flash Image), voice input, and an infinite canvas — backed by a cloud database and storage — in one production-ready application.
             </p>
-            <a href="/generate" className="mt-8 inline-flex items-center gap-2 font-medium text-[var(--clay)] transition hover:gap-3">
-              Launch the canvas <ArrowUpRightIcon size={18} weight="bold" />
+            <a href="/generate" className="mt-8 inline-flex items-center gap-2 text-[var(--clay)] transition hover:gap-3">
+              <D italic>Launch the canvas</D> <ArrowUpRightIcon size={18} weight="bold" />
             </a>
           </div>
-          <ul>
-            {FEATURES.map(({ icon: Icon, title, desc }, i) => (
-              <li key={title} className="group grid grid-cols-[auto_auto_1fr] items-start gap-5 border-t border-[var(--line)] py-6 transition last:border-b">
-                <span className="mt-1 text-[var(--sage)] transition group-hover:text-[var(--clay)]"><Icon size={22} weight="duotone" /></span>
-                <div>
+          <div className="grid gap-x-8 gap-y-8 sm:grid-cols-2">
+            {FEATURES.map(({ icon: Icon, title, desc }) => (
+              <div key={title} className="group flex items-start gap-4">
+                <span className="mt-0.5 shrink-0 rounded-xl bg-[var(--clay)]/10 p-2 text-[var(--sage)] transition group-hover:bg-[var(--clay)]/20 group-hover:text-[var(--clay)]">
+                  <Icon size={20} weight="duotone" />
+                </span>
+                <div className="min-w-0">
                   <h3 className="font-semibold">{title}</h3>
                   <p className="mt-1 text-sm leading-relaxed text-[var(--muted)]">{desc}</p>
                 </div>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="relative z-10 mx-auto max-w-6xl px-6 py-16">
+        <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-[var(--clay)]">How it works</p>
+        <D as="h2" className="mx-auto mt-4 mb-10 max-w-2xl text-center text-4xl font-semibold md:text-5xl">From idea to canvas in <D as="span" italic>three steps</D></D>
+        <div className="grid gap-6 md:grid-cols-3">
+          {STEPS.map((s) => (
+            <div key={s.n} className="rounded-2xl border border-[var(--line)] bg-[var(--paper-2)]/70 p-7 shadow-[0_2px_10px_rgba(70,45,30,0.05)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_-20px_rgba(70,45,30,0.3)]">
+              <D as="span" className="text-3xl font-semibold text-[var(--clay)]/50">{s.n}</D>
+              <h3 className="mt-4 text-lg font-semibold">{s.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{s.desc}</p>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* How I Built It/TechStack */}
-      <section id="techstack" className="relative z-10 mx-auto max-w-6xl px-6 py-20">
+      <section id="techstack" className="relative z-10 mx-auto max-w-6xl px-6 py-16">
         <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-[var(--clay)]">How I Built It</p>
-        <D as="h2" className="mx-auto mt-4 mb-14 max-w-2xl text-center text-4xl font-semibold md:text-5xl">The craft behind the canvas</D>
+        <D as="h2" className="mx-auto mt-4 mb-10 max-w-2xl text-center text-4xl font-semibold md:text-5xl">The craft behind the canvas</D>
         <div className="grid gap-6 md:grid-cols-3">
           {STACK.map((col) => (
             <div key={col.title} className="rounded-2xl border border-[var(--line)] bg-[var(--paper-2)]/70 p-7 shadow-[0_2px_10px_rgba(70,45,30,0.05)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_-20px_rgba(70,45,30,0.3)]">
@@ -149,7 +177,7 @@ export default function AICanvasLanding() {
       </section>
 
       {/* CTA */}
-      <section className="relative z-10 mx-auto max-w-5xl px-6 py-20">
+      <section className="relative z-10 mx-auto max-w-5xl px-6 py-16">
         <div className="relative overflow-hidden rounded-[2rem] bg-[var(--ink)] px-8 py-20 text-center">
           <div className="pointer-events-none absolute -top-20 -right-10 h-72 w-72 rounded-full bg-[var(--clay)]/30 blur-[100px]" />
           <div className="pointer-events-none absolute -bottom-24 -left-10 h-72 w-72 rounded-full bg-[var(--sage)]/25 blur-[100px]" />
@@ -171,7 +199,7 @@ export default function AICanvasLanding() {
             <a href="https://github.com/agakshita5/ai-canvas" target="_blank" rel="noopener noreferrer" className="transition hover:text-[var(--ink)]">GitHub Repository</a>
             <a href="/generate" className="transition hover:text-[var(--ink)]">Live Application</a>
           </div>
-          <p className="text-sm text-[var(--muted)]">© 2026 AI Canvas</p>
+          <p className="text-sm text-[var(--muted)]">© 2026 AICANVAS</p>
         </div>
       </footer>
     </div>
