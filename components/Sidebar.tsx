@@ -62,13 +62,21 @@ function Sidebar() {
         return [...sessionsMap.values()].sort((a, b) => b.latest.localeCompare(a.latest));
     }, [history]);
 
+    // prefer the persisted canvas over raw DB history
+    function effectiveImages(key: string, dbImages: CanvasImage[]): CanvasImage[] {
+        if (typeof window === 'undefined') return dbImages;
+        const raw = localStorage.getItem(`canvas-images:${key}`);
+        if (raw) { try { return JSON.parse(raw); } catch { /* fall through */ } }
+        return dbImages;
+    }
+
     const restored = useRef(false);
     useEffect(() => {
         if (restored.current || sessions.length === 0) return;
         restored.current = true;
         const last = localStorage.getItem('last-session');
         const session = last && sessions.find(s => s.key === last);
-        if (session) openSession(session.key, session.images);
+        if (session) openSession(session.key, effectiveImages(session.key, session.images));
     }, [sessions, openSession]);
 
     return (
@@ -100,7 +108,7 @@ function Sidebar() {
                         (
                         <button
                             key={session.key}
-                            onClick={() => openSession(session.key, session.images)}
+                            onClick={() => openSession(session.key, effectiveImages(session.key, session.images))}
                             className={`flex flex-col w-full px-3 py-2 hover:bg-highlight rounded transition-colors ${isSidebarOpen && session.key === sessionId ? "bg-highlight" : ""}`} // highlight session being viewed
                         >
                             {isSidebarOpen && (

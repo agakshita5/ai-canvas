@@ -1,8 +1,3 @@
-// Add an /api/edit/route.ts mirroring /api/chat/route.ts — it takes { imageUrl, instruction, mask? }, runs the edit, 
-// uploads the result via your existing uploadGeneratedImage, 
-// and saves a new generations row (same session_id so the edit stays in the chat). 
-// On the client, the selected-image plumbing already exists.
-
 import { generateText } from 'ai';
 import { vertex } from '@ai-sdk/google-vertex';
 import { NextResponse } from 'next/server';
@@ -21,7 +16,9 @@ export async function POST(req: Request) {
     setupGoogleCredentials(); // for vercel deployment
 
     // validate request
-    const { imageUrl, instruction, sessionId } = await req.json();
+    const { imageUrl, instruction, sessionId, referenceImage, aspectRatio } = await req.json();
+
+    const expand = typeof aspectRatio === 'string' && aspectRatio !== '1:1';
 
     // edits within a chat reuse the chat's sessionId
     let resolvedSessionId = sessionId;
@@ -53,17 +50,21 @@ export async function POST(req: Request) {
 
     const buf = Buffer.from(await resp.arrayBuffer())
 
-    // edit image 
+    const content: Array<{ type: 'text', text: string } | { type: 'image', image: Buffer, mediaType: string }> = [
+        { type: 'text', text: instruction },
+        { type: 'image', image: buf, mediaType: 'image/png' },
+    ];
+    if (typeof referenceImage === 'string' && referenceImage.startsWith('data:')) {
+        const [meta, b64] = referenceImage.split(',');
+        const mediaType = meta.match(/data:(.*?);base64/)?.[1] ?? 'image/png';
+        content.push({ type: 'image', image: Buffer.from(b64, 'base64'), mediaType });
+    }
+
+    // edit image
     const result = await generateText({
         model: vertex('gemini-2.5-flash-image'),
-        providerOptions: { google: { responseModalities: ['IMAGE'] } },
-        messages: [{ 
-            role: 'user', 
-            content: [
-                { type: 'text', text: instruction },
-                { type: 'image', image: buf, mediaType: 'image/png' },
-            ]
-        }],
+        providerOptions: { google: { responseModalities: ['IMAGE'], ...(expand ? { imageConfig: { aspectRatio } } : {}) } },
+        messages: [{ role: 'user', content }],
    });
 
     if (!result.files) throw new Error('image generation failed');
@@ -80,7 +81,7 @@ export async function POST(req: Request) {
       prompt: instruction,
       imageUrl: uploadedImage.imageUrl,
       sbPublicId: uploadedImage.path,
-      aspectRatio: '1:1',
+      aspectRatio: expand ? aspectRatio : '1:1',
       sessionId: resolvedSessionId,
     });
 

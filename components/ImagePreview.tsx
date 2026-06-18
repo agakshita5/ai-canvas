@@ -7,27 +7,13 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import {useImageGeneration} from "@/providers/image-generation-provider";
 import { ReactFlow, Background, BackgroundVariant, applyNodeChanges, type Node, type OnSelectionChangeParams, type ReactFlowInstance } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { CheckCircleIcon } from '@phosphor-icons/react';
+import { loadPos, savePos } from "@/lib/canvas-pos";
 
 const nodeTypes = { image: ImageNode };
 
-// persist dragged node positions across refreshes
-const posKey = (id: string) => `canvas-pos:${id}`;
-function loadPos(id: string): {x: number, y: number} | null {
-    if (typeof window === 'undefined') return null;
-    try {
-        const raw = localStorage.getItem(posKey(id));
-        return raw ? JSON.parse(raw) : null;
-    } catch {
-        return null;
-    }
-}
-function savePos(id: string, pos: {x: number, y: number}) {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem(posKey(id), JSON.stringify(pos));
-}
-
 export default function ImagePreview(){
-    const {images, sessionId} = useImageGeneration();
+    const {images, sessionId, pendingDelete, undoDelete, notice} = useImageGeneration();
     // every session keeps its own canvas nodes 
     const [allNodes, setAllNodes] = useState<Record<string, Node[]>>({});
     const nodes = allNodes[sessionId] ?? [];
@@ -93,6 +79,22 @@ export default function ImagePreview(){
                     )}
                 </div>
             </div>
+            
+            <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
+                {notice && (
+                    <div className="inline-flex items-center gap-2 rounded-lg bg-panel px-4 py-2 text-sm font-medium text-content shadow-lg ring-1 ring-edge backdrop-blur-md">
+                        <CheckCircleIcon size={18} weight="fill" className="text-accent" /> {notice}
+                    </div>
+                )}
+                {pendingDelete && (
+                    <div className="flex items-center gap-3 rounded-lg bg-panel px-4 py-2 text-sm text-content shadow-lg ring-1 ring-edge backdrop-blur-md">
+                        <span>Image deleted</span>
+                        <button onClick={undoDelete} className="font-medium text-accent transition hover:underline">
+                            Undo
+                        </button>
+                    </div>
+                )}
+        </div>
         </>
     );
 }

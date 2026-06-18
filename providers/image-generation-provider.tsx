@@ -2,7 +2,8 @@
 // returns generate function that PromptBar will call
 'use client';
 
-import { createContext, useContext, useState, ReactNode  } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, ReactNode  } from 'react';
+import { savePos } from '@/lib/canvas-pos';
 
 export type CanvasImage = {id: string, url: string, prompt: string, aspectRatio: string};
 
@@ -13,7 +14,13 @@ interface ImageContextType{
     lastSize: string;
     lastPrompt: string;
     generate: (prompt: string, size: string) => Promise<boolean>;
-    editImage: (imageUrl: string, instruction: string) => Promise<boolean>;
+    editImage: (imageUrl: string, instruction: string, referenceImage?: string, aspectRatio?: string, position?: {x: number, y: number}) => Promise<boolean>;
+    resizeImage: (imageUrl: string, aspectRatio: string, position?: {x: number, y: number}) => Promise<boolean>;
+    duplicateImage: (img: {id: string, url: string, prompt: string}) => void;
+    removeImage: (id: string) => void;
+    pendingDelete: {image: CanvasImage, sessionId: string} | null;
+    undoDelete: () => void;
+    notice: string | null;
     sessionId: string;
     images: CanvasImage[];
     newSession: () => void;
@@ -28,10 +35,26 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(false);
     const [lastPrompt, setLastPrompt] = useState<string>('');
     const [lastSize, setLastSize] = useState<string>('');
-    // each chat session keeps its own canvas images
     const [sessions, setSessions] = useState<Record<string, CanvasImage[]>>({});
     const [sessionId, setSessionId] = useState(() => crypto.randomUUID());
     const images = sessions[sessionId] ?? [];
+    const [pendingDelete, setPendingDelete] = useState<{image: CanvasImage, sessionId: string} | null>(null);
+    const deleteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [notice, setNotice] = useState<string | null>(null);
+    const noticeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    function showNotice(msg: string) {
+        setNotice(msg);
+        if (noticeTimer.current) clearTimeout(noticeTimer.current);
+        noticeTimer.current = setTimeout(() => { setNotice(null); noticeTimer.current = null; }, 2000);
+    }
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const key = `canvas-images:${sessionId}`;
+        if (images.length === 0 && localStorage.getItem(key) === null) return;
+        localStorage.setItem(key, JSON.stringify(images));
+    }, [images, sessionId]);
 
     function persistSession(id: string) {
         if (typeof window !== 'undefined') localStorage.setItem('last-session', id);
@@ -47,16 +70,53 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
         });
     }
 
-    async function editImage(imageUrl: string, instruction: string){
+    function duplicateImage(img: {id: string, url: string, prompt: string}) {
+        addImage({id: img.id, url: img.url, prompt: img.prompt, aspectRatio: ''});
+    }
+
+    function removeImage(id: string) {
+        const sid = sessionId;
+        const removed = (sessions[sid] ?? []).find(i => i.id === id);
+        if (!removed) return;
+        setSessions(prev => ({...prev, [sid]: (prev[sid] ?? []).filter(i => i.id !== id)}));
+        if (removed.url === imageUrl) setImageUrl(''); // dropped the "current" image
+
+        if (deleteTimer.current) clearTimeout(deleteTimer.current); // only one undo at a time
+        setPendingDelete({image: removed, sessionId: sid});
+        deleteTimer.current = setTimeout(() => {
+            if (typeof window !== 'undefined') localStorage.removeItem(`canvas-pos:${removed.id}`);
+            setPendingDelete(null);
+            deleteTimer.current = null;
+        }, 10000); // undo for 10s
+    }
+
+    function undoDelete() {
+        if (!pendingDelete) return;
+        const {image, sessionId: sid} = pendingDelete;
+        setSessions(prev => {
+            const current = prev[sid] ?? [];
+            return current.some(i => i.id === image.id) ? prev : {...prev, [sid]: [...current, image]};
+        });
+        if (deleteTimer.current) clearTimeout(deleteTimer.current);
+        deleteTimer.current = null;
+        setPendingDelete(null);
+    }
+
+    function resizeImage(imageUrl: string, aspectRatio: string, position?: {x: number, y: number}) {
+        const instruction = `Expand this image to a ${aspectRatio} aspect ratio. Naturally extend the scene to fill the new space while keeping the original subject unchanged and uncropped.`;
+        return editImage(imageUrl, instruction, undefined, aspectRatio, position);
+    }
+
+    async function editImage(imageUrl: string, instruction: string, referenceImage?: string, aspectRatio?: string, position?: {x: number, y: number}){
         setError('');
-        
+
         try{
             const res = await fetch("/api/edit", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({imageUrl, instruction, sessionId}), 
+                body: JSON.stringify({imageUrl, instruction, sessionId, referenceImage, aspectRatio}),
             });
 
             const data = await res.json();
@@ -66,10 +126,10 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
             if(data.success){
                 console.log('api returned:', data.imageUrl);
                 setImageUrl(data.imageUrl);
-                setLastPrompt(instruction);
-                setLastSize(data.aspectRatio);
-                addImage({id: data.id, url: data.imageUrl, prompt: instruction, aspectRatio: data.aspectRatio});
-                persistSession(sessionId); 
+                if (position) savePos(data.id, position); 
+                addImage({id: data.id, url: data.imageUrl, prompt: lastPrompt, aspectRatio: data.aspectRatio});
+                persistSession(sessionId);
+                showNotice('Done');
                 window.dispatchEvent(new Event('generation-created'));
                 return true;
             }else{
@@ -142,7 +202,15 @@ export function ImageGenerationProvider({ children }: { children: ReactNode }) {
     }
 
     return (
-        <ImageContext.Provider value={{imageUrl, loading, error, lastPrompt, lastSize, generate, editImage, sessionId, images, newSession, openSession}}>
+        <ImageContext.Provider value={
+            {imageUrl, loading, error, lastPrompt, lastSize, 
+            generate, editImage, resizeImage, duplicateImage, 
+            removeImage, pendingDelete, undoDelete, 
+            sessionId, 
+            images, 
+            notice,
+            newSession, openSession}
+        }>
             {children}
         </ImageContext.Provider>
     );
