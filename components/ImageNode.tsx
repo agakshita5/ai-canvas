@@ -3,7 +3,7 @@
 
 import { useRef, useState } from 'react';
 import { type Node, type NodeProps } from '@xyflow/react';
-import { PaintBrushIcon, CircleNotchIcon, ArrowRightIcon, XIcon, CopyIcon, PaperclipIcon, CornersOutIcon, TrashIcon} from '@phosphor-icons/react';
+import { PaintBrushIcon, CircleNotchIcon, ArrowRightIcon, XIcon, CopyIcon, PaperclipIcon, ResizeIcon, TrashIcon} from '@phosphor-icons/react';
 import { useImageGeneration } from '@/providers/image-generation-provider';
 import { savePos } from '@/lib/canvas-pos';
 
@@ -165,7 +165,7 @@ export function ImageNode({ id, data, selected, positionAbsoluteX, positionAbsol
                             </button>
                             <button onClick={() => setResizing(true)} title="Resize"
                                 className="rounded-lg transition hover:bg-highlight flex gap-2 items-center">
-                                <CornersOutIcon size={18} weight="duotone" /> Resize
+                                <ResizeIcon size={18} weight="duotone" /> Resize
                             </button>
                             <button onClick={() => removeImage(id)} title="Delete"
                                 className="rounded-lg text-content transition hover:bg-red-500/20 hover:text-red-400 flex gap-2 items-center">
